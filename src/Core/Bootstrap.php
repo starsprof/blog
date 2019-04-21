@@ -11,6 +11,8 @@ use App\Controllers\PageController;
 use App\Controllers\UserController;
 use App\Models\Auth;
 use App\Models\Repositories\BaseRepository;
+use App\Models\Repositories\CategoryRepository;
+use App\Models\Repositories\CategoryRepositoryInterface;
 use App\Models\Repositories\UserRepository;
 use App\Models\Repositories\UserRepositoryInterface;
 use App\Models\User;
@@ -78,13 +80,16 @@ class Bootstrap
         ];
 
         $container = &$this->container;
-        $container[UserRepositoryInterface::class] = function ($container) {
+        $this->container[UserRepositoryInterface::class] = function ($container) {
             return new UserRepository($container);
         };
-        $container[User::class] = function ($container) {
+        $this->container[CategoryRepositoryInterface::class] = function ($container){
+            return new CategoryRepository($container);
+        };
+        $this->container[User::class] = function ($container) {
             return new User($container);
         };
-        $container[Auth::class] = function ($container) {
+        $this->container[Auth::class] = function ($container) {
             return new Auth($container, $container->get(UserRepositoryInterface::class));
         };
         $this->container['view'] = function ($container) use ($configurationView) {
