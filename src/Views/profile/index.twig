@@ -1,0 +1,76 @@
+{% extends 'template.twig' %}
+
+{% block title %}Edit profile {{ user.getName }}{% endblock %}
+
+{% block content %}
+    <div class="profile">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-start">
+                    <div class="image-container">
+                        {% if user.getAvatar is empty %}
+                                <img class="img-thumbnail" src="/uploads/avatar.png" alt="user avatar"/>
+                            {% else %}
+                                <img class="img-thumbnail" src="{{ user.getAvatar }}" alt="user avatar"/>
+                        {% endif %}
+                    </div>
+                    <div class="header-container ml-3">
+                        <h2 class="d-block" style="font-size: 1.5rem; font-weight: bold">{{ user.getName }}</h2>
+                        <a href="/users/profile/edit" class=""><i class="fas fa-pen"></i> Edit profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="basicInfo-tab" data-toggle="tab" href="#basicInfo" role="tab"
+                           aria-controls="basicInfo" aria-selected="true">Basic Info</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="postsInfo-tab" data-toggle="tab" href="#postsInfo" role="tab"
+                           aria-controls="postsInfo" aria-selected="false">Posts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="commentsInfo-tab" data-toggle="tab" href="#commentsInfo" role="tab"
+                           aria-controls="commentsInfo" aria-selected="false">Comments</a>
+                    </li>
+                </ul>
+                <div class="tab-content ml-1" id="myTabContent">
+                    <div class="tab-pane fade show active" id="basicInfo" role="tabpanel"
+                         aria-labelledby="basicInfo-tab">
+                        <div class="row">
+                            <div class="col-sm-3 col-md-2 col-5">
+                                <label style="font-weight:bold;">Full Name: </label>
+                            </div>
+                            <div class="col-md-8 col-6">
+                                {% if  user.getName is empty %}
+                                    not specified
+                                {% else %}
+                                    {{  user.getName }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr/>
+                        <div class="row">
+                            <div class="col-sm-3 col-md-2 col-5">
+                                <label style="font-weight:bold;">Email: </label>
+                            </div>
+                            <div class="col-md-8 col-6">
+                               {{  user.getEmail }}
+                            </div>
+                        </div>
+                        <hr/>
+                    </div>
+                    <div class="tab-pane fade" id="postsInfo" role="tabpanel" aria-labelledby="postsInfo-tab">
+
+                    </div>
+                    <div class="tab-pane fade" id="commentsInfo" role="tabpanel" aria-labelledby="commentsInfo-tab">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

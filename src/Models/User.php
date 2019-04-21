@@ -4,6 +4,9 @@
 namespace App\Models;
 
 
+use App\Models\Repositories\UserRepositoryInterface;
+use Psr\Container\ContainerInterface;
+
 /**
  * Class User
  * @package App\Models
@@ -30,6 +33,16 @@ class User
      * @var string|null
      */
     protected $avatar;
+
+    /**
+     * @var UserRepositoryInterface
+     */
+    private $userRepository;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->userRepository = $container->get(UserRepositoryInterface::class);
+    }
 
     /**
      * @return int
@@ -103,5 +116,13 @@ class User
         $this->avatar = $avatar;
     }
 
+    /**
+     * Update User
+     * @return bool
+     */
+    public function save():bool
+    {
+        return $this->userRepository->update($this);
+    }
 
 }

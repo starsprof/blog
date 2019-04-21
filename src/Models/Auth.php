@@ -28,6 +28,18 @@ class Auth extends BaseModel
     }
 
     /**
+     * Reload and relogin user from DB
+     * @param User $user
+     * @return User
+     */
+    public function reloadUser(User $user): User
+    {
+        $updatedUser = $this->userRepository->findOneById($user->getId());
+        $this->signInByUser($updatedUser);
+        return $updatedUser;
+    }
+
+    /**
      * Check email availability
      * @param string $email
      * @return bool
@@ -44,7 +56,7 @@ class Auth extends BaseModel
      */
     public function signUp(string $email, string $password): User
     {
-        $user = new User();
+        $user = $this->container->get(User::class);
         $user->setEmail($email);
         $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
         $user = $this->userRepository->create($user);

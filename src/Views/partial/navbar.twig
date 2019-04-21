@@ -42,10 +42,16 @@
                 <ul class="navbar-nav ml-5">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-toggle="dropdown"
-                           aria-expanded="false">{{ auth.user.getEmail }}</a>
+                           aria-expanded="false">
+                            {% if auth.user.getName is empty %}
+                                {{ auth.user.getEmail }}
+                            {% else %}
+                                {{ auth.user.getName }}
+                            {% endif %}
+                        </a>
                         <div class="dropdown-menu" aria-labelledby="dropdown05">
                             <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Profile</a>
+                            <a class="dropdown-item" href="/profile">Profile</a>
                             <a class="dropdown-item" href="/signOut">Sign Out</a>
                         </div>
                     </li>

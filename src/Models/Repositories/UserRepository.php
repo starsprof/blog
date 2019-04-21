@@ -9,7 +9,6 @@ use PDO;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
-
     /**
      * Find one user by id
      * @param int $id
@@ -18,7 +17,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function findOneById(int $id): ?User
     {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id=:id LIMIT 1");
-        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, User::class);
+        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, User::class, [$this->container]);
         $stmt->execute(['id' => $id]);
         $user = $stmt->fetch();
         return $user ? $user : null;
@@ -34,7 +33,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $in = str_repeat('?,', count($ids) - 1) . '?';
         $sql = "SELECT * FROM users WHERE id IN ($in)";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, User::class);
+        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, User::class, [$this->container]);
         $stmt->execute($ids);
         return $stmt->fetchAll();
     }
@@ -46,7 +45,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function findAll(): array
     {
         $stmt = $this->pdo->query('SELECT * FROM users');
-        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, User::class);
+        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, User::class, [$this->container]);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -92,7 +91,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function checkAuth(string $email, string $password): ?User
     {
         $stmt = $this->pdo->prepare('SELECT * FROM users WHERE email=:email LIMIT 1');
-        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, User::class);
+        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, User::class, [$this->container]);
         $stmt->execute(['email' => $email]);
         /** @var User $user */
         $user = $stmt->fetch();
@@ -108,5 +107,22 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $stmt = $this->pdo->prepare('SELECT * FROM users WHERE email=:email LIMIT 1');
         $stmt->execute(['email' => $email]);
         return ! ((bool) $stmt->fetch());
+    }
+
+    /**
+     * Update User, skip email
+     * @param User $user
+     * @return bool
+     */
+    public function update(User $user): bool
+    {
+        $stmt = $this->pdo->prepare('UPDATE `users` SET name=:name, avatar=:avatar, password=:password WHERE id=:id');
+        $stmt->execute([
+            'name' => $user->getName(),
+            'avatar' => $user->getAvatar(),
+            'password' => $user->getPassword(),
+            'id' => $user->getId()
+        ]);
+        return (bool)$stmt->rowCount();
     }
 }

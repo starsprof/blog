@@ -8,9 +8,12 @@ use App\Controllers\AuthController;
 use App\Controllers\Middleware\AuthMiddleware;
 use App\Controllers\Middleware\GuestMiddleware;
 use App\Controllers\PageController;
+use App\Controllers\UserController;
 use App\Models\Auth;
 use App\Models\Repositories\BaseRepository;
 use App\Models\Repositories\UserRepository;
+use App\Models\Repositories\UserRepositoryInterface;
+use App\Models\User;
 use DebugBar\StandardDebugBar;
 use Dotenv\Dotenv;
 use Slim\App;
@@ -75,11 +78,17 @@ class Bootstrap
         ];
 
         $container = &$this->container;
+        $container[UserRepositoryInterface::class] = function ($container) {
+            return new UserRepository($container);
+        };
+        $container[User::class] = function ($container) {
+            return new User($container);
+        };
         $container[Auth::class] = function ($container) {
-            return new Auth($container, new UserRepository());
+            return new Auth($container, $container->get(UserRepositoryInterface::class));
         };
         $this->container['view'] = function ($container) use ($configurationView) {
-            $view = new \Slim\Views\Twig(getenv('ROOT').'/Views', $configurationView);
+            $view = new \Slim\Views\Twig(getenv('ROOT') . '/Views', $configurationView);
             $router = $container->get('router');
             $uri = \Slim\Http\Uri::createFromEnvironment(new \Slim\Http\Environment($_SERVER));
             $view->addExtension(new \Slim\Views\TwigExtension($router, $uri));
@@ -94,8 +103,6 @@ class Bootstrap
     private function setUpDebugBar()
     {
         $debugBar = new StandardDebugBar();
-        $pdo = new \DebugBar\DataCollector\PDO\TraceablePDO(BaseRepository::getPDO());
-        $debugBar->addCollector(new \DebugBar\DataCollector\PDO\PDOCollector($pdo));
         $view = $this->container['view'];
         $debugBarRender = $debugBar->getJavascriptRenderer();
         $debugBarRender->setBaseUrl('\assets\debugbar');
@@ -120,6 +127,10 @@ class Bootstrap
 
         $this->app
             ->get('/signOut', AuthController::class.':signOut')
+            ->add(new AuthMiddleware($this->container));
+
+        $this->app
+            ->map(['GET', 'POST'], '/profile', UserController::class.':profile')
             ->add(new AuthMiddleware($this->container));
     }
 

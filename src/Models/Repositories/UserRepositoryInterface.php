@@ -18,18 +18,18 @@ interface UserRepositoryInterface
      * @param int[] $ids
      * @return User[]
      */
-    public function findManyByIds($ids = array()): array ;
+    public function findManyByIds($ids = array()): array;
 
     /**
      * @return User[]
      */
-    public function findAll(): array ;
+    public function findAll(): array;
 
     /**
      * @param int $id
      * @return bool
      */
-    public function deleteOneById(int $id): bool ;
+    public function deleteOneById(int $id): bool;
 
     /**
      * @param User $user
@@ -43,10 +43,17 @@ interface UserRepositoryInterface
      * @return User|null
      */
     public function checkAuth(string $email, string $password): ?User;
+
     /**
      * @param string $email
      * @return bool
      */
     public function checkEmailAvailability(string $email): bool;
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public function update(User $user): bool;
 
 }

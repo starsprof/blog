@@ -5,6 +5,7 @@ namespace App\Models\Repositories;
 
 
 use PDO;
+use Psr\Container\ContainerInterface;
 
 abstract class BaseRepository
 {
@@ -13,9 +14,14 @@ abstract class BaseRepository
      */
     protected $pdo;
 
-    public function __construct()
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
+    public function __construct(ContainerInterface $container)
     {
         $this->pdo = self::getPDO();
+        $this->container = $container;
     }
 
     public static function getPDO()
