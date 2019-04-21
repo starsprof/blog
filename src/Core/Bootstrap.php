@@ -5,6 +5,8 @@ namespace App\Core;
 
 
 use App\Controllers\AuthController;
+use App\Controllers\Middleware\AuthMiddleware;
+use App\Controllers\Middleware\GuestMiddleware;
 use App\Controllers\PageController;
 use App\Models\Auth;
 use App\Models\Repositories\BaseRepository;
@@ -103,10 +105,22 @@ class Bootstrap
 
     private function bindRoutes()
     {
-        $this->app->get('/', PageController::class.':home');
-        $this->app->map(['GET', 'POST'], '/signin', AuthController::class.':signIn');
-        $this->app->map(['GET', 'POST'], '/signup', AuthController::class.':signUp');
-        $this->app->get('/signOut', AuthController::class.':signOut');
+        $this->app
+            ->get('/', PageController::class.':home')
+            ->setName('home');
+
+        $this->app
+            ->map(['GET', 'POST'], '/signin', AuthController::class.':signIn')
+            ->setName('signIn')
+            ->add(new GuestMiddleware($this->container));
+
+        $this->app
+            ->map(['GET', 'POST'], '/signup', AuthController::class.':signUp')
+            ->add(new GuestMiddleware($this->container));
+
+        $this->app
+            ->get('/signOut', AuthController::class.':signOut')
+            ->add(new AuthMiddleware($this->container));
     }
 
     public function run()
