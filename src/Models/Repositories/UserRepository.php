@@ -7,21 +7,21 @@ namespace App\Models\Repositories;
 use App\Models\User;
 use PDO;
 
-class UserRepository extends BaseRepository
+class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
 
     /**
      * Find one user by id
-     * @param $id
+     * @param int $id
      * @return User|null
      */
-    public function findOneById($id): ?User
+    public function findOneById(int $id): ?User
     {
-          $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id=:id LIMIT 1");
-          $stmt->setFetchMode(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, User::class);
-          $stmt->execute(['id' => $id]);
-          $user = $stmt->fetch();
-          return $user ? $user : null;
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id=:id LIMIT 1");
+        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, User::class);
+        $stmt->execute(['id' => $id]);
+        $user = $stmt->fetch();
+        return $user ? $user : null;
     }
 
     /**
@@ -29,12 +29,12 @@ class UserRepository extends BaseRepository
      * @param array $ids
      * @return User[]
      */
-    public function findManyByIds($ids = array()):array
+    public function findManyByIds($ids = array()): array
     {
-        $in  = str_repeat('?,', count($ids) - 1) . '?';
+        $in = str_repeat('?,', count($ids) - 1) . '?';
         $sql = "SELECT * FROM users WHERE id IN ($in)";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->setFetchMode(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, User::class);
+        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, User::class);
         $stmt->execute($ids);
         return $stmt->fetchAll();
     }
@@ -46,7 +46,7 @@ class UserRepository extends BaseRepository
     public function findAll(): array
     {
         $stmt = $this->pdo->query('SELECT * FROM users');
-        $stmt->setFetchMode(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, User::class);
+        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, User::class);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -56,10 +56,57 @@ class UserRepository extends BaseRepository
      * @param $id
      * @return bool
      */
-    public function deleteOneById($id):bool
+    public function deleteOneById(int $id): bool
     {
         $stmt = $this->pdo->prepare('DELETE FROM users WHERE id=:id');
         $stmt->execute(array('id' => $id));
-        return (bool) $stmt->rowCount();
+        return (bool)$stmt->rowCount();
+    }
+
+    /**
+     * Create new User
+     * @param User $user
+     * @return User
+     */
+    public function create(User $user): User
+    {
+        $stmt = $this->pdo->prepare('INSERT INTO `users` (`email`, `password`, `name`, `avatar`) 
+                            VALUES (:email, :password, :name, :avatar)');
+        $stmt->execute([
+            'email' => $user->getEmail(),
+            'password' => $user->getPassword(),
+            'name' => $user->getName(),
+            'avatar' => $user->getAvatar()
+        ]);
+        $id = (integer)$this->pdo->lastInsertId();
+        $user = $this->findOneById($id);
+        return $user;
+    }
+
+    /**
+     * Check user
+     * @param string $email
+     * @param string $password
+     * @return User|null
+     */
+    public function checkAuth(string $email, string $password): ?User
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM users WHERE email=:email LIMIT 1');
+        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, User::class);
+        $stmt->execute(['email' => $email]);
+        /** @var User $user */
+        $user = $stmt->fetch();
+        return $user && password_verify($password, $user->getPassword()) ? $user : null;
+    }
+
+    /**
+     * @param string $email
+     * @return bool
+     */
+    public function checkEmailAvailability(string $email): bool
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM users WHERE email=:email LIMIT 1');
+        $stmt->execute(['email' => $email]);
+        return ! ((bool) $stmt->fetch());
     }
 }

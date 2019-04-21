@@ -12,6 +12,7 @@
     <title>{% block title %}{% endblock %} - BLOG</title>
     {% block head %}
     {% endblock %}
+    {{ debugHead | raw }}
 </head>
 <body>
 {% include 'partial/navbar.twig' %}
@@ -41,6 +42,8 @@
         </div>
     </div>
 </div>
+
+{{ debugBody | raw }}
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

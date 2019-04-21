@@ -15,6 +15,11 @@ abstract class BaseRepository
 
     public function __construct()
     {
+        $this->pdo = self::getPDO();
+    }
+
+    public static function getPDO()
+    {
         $host = getenv('DB_HOST');
         $db = getenv('DB_NAME');
         $user = getenv('DB_USER');
@@ -27,14 +32,6 @@ abstract class BaseRepository
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
         ];
-        $this->pdo = new PDO($dsn, $user, $pass, $opt);
+        return new PDO($dsn, $user, $pass, $opt);
     }
-
-    public abstract function findOneById($id);
-
-    public abstract function findManyByIds($ids = array());
-
-    public abstract function findAll();
-
-    public abstract function deleteOneById($id);
 }
