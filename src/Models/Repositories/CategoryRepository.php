@@ -26,13 +26,18 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
 
     /**
      * Find all Categories
+     * @param int $page
+     * @param int $count
      * @return Category[]
      */
-    public function findAll(): array
+    public function findAll(int $page=1, $count=10000): array
     {
-        $stmt = $this->pdo->query('SELECT * FROM categories');
+        $stmt = $this->pdo->prepare('SELECT * FROM categories LIMIT :limit OFFSET :offset');
         $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Category::class, [$this->container]);
-        $stmt->execute();
+        $stmt->execute([
+            'limit' => $count,
+            'offset' => (($page-1)*$count)
+        ]);
         return $stmt->fetchAll();
     }
 
@@ -82,5 +87,14 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
             'id' => $category->getId()
         ]);
         return (bool)$stmt->rowCount();
+    }
+
+    /**
+     * Get all Categories count
+     * @return int
+     */
+    public function count(): int
+    {
+        return $this->pdo->query('SELECT count(*) FROM categories')->fetchColumn();
     }
 }

@@ -5,6 +5,7 @@ namespace App\Core;
 
 
 use App\Controllers\AuthController;
+use App\Controllers\CategoryController;
 use App\Controllers\Middleware\AuthMiddleware;
 use App\Controllers\Middleware\GuestMiddleware;
 use App\Controllers\PageController;
@@ -26,7 +27,7 @@ class Bootstrap
     /**
      * @var Container
      */
-    private $container;
+    public $container;
     /**
      * @var App
      */
@@ -137,6 +138,15 @@ class Bootstrap
         $this->app
             ->map(['GET', 'POST'], '/profile', UserController::class.':profile')
             ->add(new AuthMiddleware($this->container));
+        $app = &$this->app;
+        $this->app
+            ->group('/admin', function () use ($app) {
+            $app->group('/categories', function () use ($app){
+                $app->get('[/{page:[0-9]+}]', CategoryController::class.':adminIndex');
+                $app->delete('/delete', CategoryController::class.':adminRemove');
+                $app->map(['GET', 'POST'], '/add', CategoryController::class.':adminAdd');
+            });
+            })->add(new AuthMiddleware($this->container));
     }
 
     public function run()

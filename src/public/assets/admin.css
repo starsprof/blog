@@ -1,0 +1,7 @@
+.category-small{
+    max-width: 200px;
+    max-height: 150px;
+}
+.custom-file-label{
+    margin: 0 15px !important;
+}

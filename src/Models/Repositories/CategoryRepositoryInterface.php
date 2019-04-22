@@ -17,9 +17,11 @@ interface CategoryRepositoryInterface
 
     /**
      * Find all Categories
+     * @param int $page
+     * @param int $count
      * @return Category[]
      */
-    public function findAll(): array;
+    public function findAll(int $page=1, $count=10000): array;
 
     /**
      * Delete one Category by Id
@@ -41,4 +43,10 @@ interface CategoryRepositoryInterface
      * @return bool
      */
     public function update(Category $category): bool;
+
+    /**
+     * Get all Categories count
+     * @return int
+     */
+    public function count(): int;
 }
