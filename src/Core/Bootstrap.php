@@ -13,6 +13,8 @@ use App\Controllers\UserController;
 use App\Models\Auth;
 use App\Models\Repositories\CategoryRepository;
 use App\Models\Repositories\CategoryRepositoryInterface;
+use App\Models\Repositories\PostRepository;
+use App\Models\Repositories\PostRepositoryInterface;
 use App\Models\Repositories\UserRepository;
 use App\Models\Repositories\UserRepositoryInterface;
 use App\Models\User;
@@ -116,6 +118,9 @@ class Bootstrap
         $this->container[CategoryRepositoryInterface::class] = function ($container){
             return new CategoryRepository($container);
         };
+        $this->container[PostRepositoryInterface::class] = function ($container){
+            return new PostRepository($container);
+        };
         $this->container[User::class] = function ($container) {
             return new User($container);
         };
@@ -150,7 +155,7 @@ class Bootstrap
         $view->addExtension(new \Twig\Extension\ProfilerExtension($this->container['twig_profile']));
         $view->addExtension(new \Twig\Extension\DebugExtension());
 
-        Debugger::$logDirectory = getenv('ROOT').'/../logs/';
+        //Debugger::$logDirectory = getenv('ROOT').'/../logs/';
         Debugger::getBar()->addPanel(new \App\Core\Utils\TracySessionBar());
         Debugger::getBar()->addPanel(new \App\Core\Utils\TracyDBBar());
         $this->app->add(new \RunTracy\Middlewares\TracyMiddleware($this->app));

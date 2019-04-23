@@ -20,8 +20,8 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         $stmt = $this->pdo->prepare("SELECT * FROM categories WHERE id=:id LIMIT 1");
         $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Category::class, [$this->container]);
         $stmt->execute(['id' => $id]);
-        $user = $stmt->fetch();
-        return $user ? $user : null;
+        $category = $stmt->fetch();
+        return $category ? $category : null;
     }
 
     /**
