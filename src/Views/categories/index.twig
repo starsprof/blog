@@ -28,7 +28,7 @@
                 <td><img class="category-small img-thumbnail" src="{{ category.getImage }}" alt=""></td>
                 <td>{{ category.getDescription }}</td>
                 <td class="d-flex">
-                    <a href="" class="btn btn-info btn-sm"><i class="fas fa-pen"></i> Edit</a>
+                    <a href="/admin/categories/edit/{{ category.getId }}" class="btn btn-info btn-sm"><i class="fas fa-pen"></i> Edit</a>
                     <form action="/admin/categories/delete" method="POST">
                         <input type="hidden" name="_METHOD" value="DELETE"/>
                         <input type="hidden" name="id" value="{{ category.getId }}">

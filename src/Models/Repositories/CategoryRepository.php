@@ -97,4 +97,16 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
     {
         return $this->pdo->query('SELECT count(*) FROM categories')->fetchColumn();
     }
+
+    /**
+     * Check if name dont exists in DB
+     * @param string $name
+     * @return bool
+     */
+    public function checkNameAvailability(string $name): bool
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM categories WHERE name=:name');
+        $stmt->execute(['name' => $name]);
+        return !(bool)$stmt->rowCount();
+    }
 }

@@ -49,4 +49,11 @@ interface CategoryRepositoryInterface
      * @return int
      */
     public function count(): int;
+
+    /**
+     * Check if name dont exists in DB
+     * @param string $name
+     * @return bool
+     */
+    public function checkNameAvailability(string $name): bool;
 }

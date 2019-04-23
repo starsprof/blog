@@ -6,5 +6,5 @@
 {% block content %}
     <h1>Add new Category</h1>
     <hr/>
-    {% include 'categories/_form.twig' %}
+    {% include 'categories/_form.twig' with {'button' : 'Add', 'path' : 'add'}%}
 {% endblock %}

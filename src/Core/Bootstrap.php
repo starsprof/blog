@@ -97,7 +97,6 @@ class Bootstrap
                         ]
                     ]
                 ]
-
             ],
         ];
     }
@@ -183,6 +182,8 @@ class Bootstrap
                 $app->get('[/{page:[0-9]+}]', CategoryController::class.':adminIndex');
                 $app->delete('/delete', CategoryController::class.':adminRemove');
                 $app->map(['GET', 'POST'], '/add', CategoryController::class.':adminAdd');
+                $app->get('/edit/{id:[0-9]+}', CategoryController::class.':getEdit');
+                $app->post('/edit', CategoryController::class.':postEdit');
             });
             })->add(new AuthMiddleware($this->container));
     }

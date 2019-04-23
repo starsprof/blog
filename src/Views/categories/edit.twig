@@ -1,0 +1,10 @@
+{% extends 'template.twig' %}
+{% block head %}
+    <link rel="stylesheet" href="/assets/admin.css">
+{% endblock %}
+
+{% block content %}
+    <h1>Edit Category: {{ category.getName }}</h1>
+    <hr/>
+    {% include 'categories/_form.twig' with {'button' : 'Save', 'path' : 'edit'}%}
+{% endblock %}
