@@ -122,12 +122,17 @@ class Bootstrap
         $this->container[Auth::class] = function ($container) {
             return new Auth($container, $container->get(UserRepositoryInterface::class));
         };
+        $container['flash'] = function () {
+            return new \Slim\Flash\Messages();
+        };
         $this->container['view'] = function ($container) use ($configurationView) {
             $view = new \Slim\Views\Twig(getenv('ROOT') . '/Views', $configurationView);
             $router = $container->get('router');
             $uri = \Slim\Http\Uri::createFromEnvironment(new \Slim\Http\Environment($_SERVER));
             $view->addExtension(new \Slim\Views\TwigExtension($router, $uri));
-
+            $view->addExtension(new \Knlv\Slim\Views\TwigMessages(
+                new \Slim\Flash\Messages()
+            ));
             $view->getEnvironment()->addGlobal('auth', $container->get(Auth::class));
 
             return $view;

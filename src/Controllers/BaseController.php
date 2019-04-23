@@ -6,11 +6,15 @@ namespace App\Controllers;
 
 use App\Models\Auth;
 use Psr\Container\ContainerInterface;
+use Slim\Flash\Messages;
 use Slim\Http\UploadedFile;
 use \Slim\Views\Twig;
 
 class BaseController
 {
+    protected const MESSAGE_ERROR = 'error';
+    protected const MESSAGE_INFO = 'info';
+    protected const MESSAGE_WARNING = 'warning';
     /**
      * @var ContainerInterface
      */
@@ -25,6 +29,11 @@ class BaseController
     protected $auth;
 
     /**
+     * @var Messages
+     */
+    protected $flash;
+
+    /**
      * BaseController constructor.
      * @param ContainerInterface $container
      */
@@ -32,6 +41,7 @@ class BaseController
         $this->container = $container;
         $this->view = $this->container->get('view');
         $this->auth = $this->container->get(Auth::class);
+        $this->flash = $this->container->get('flash');
     }
     /**
      * Moves the uploaded file to the upload directory and assigns it a unique name

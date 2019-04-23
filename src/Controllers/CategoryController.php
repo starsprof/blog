@@ -33,7 +33,6 @@ class CategoryController extends BaseController
         $this->categoryRepository = $this->container->get(CategoryRepositoryInterface::class);
     }
 
-
     public function adminIndex(Request $request, Response $response)
     {
         $page = (int) $request->getAttribute('page');
@@ -57,6 +56,7 @@ class CategoryController extends BaseController
     {
         $id = (int) $request->getParsedBody()['id'];
         $this->categoryRepository->deleteOneById($id);
+        $this->flash->addMessage(self::MESSAGE_WARNING, 'Category successfully deleted');
         return $response->withRedirect('/admin/categories');
     }
 
@@ -94,6 +94,7 @@ class CategoryController extends BaseController
             }
         }
         $this->categoryRepository->create($category);
+        $this->flash->addMessage(self::MESSAGE_INFO, 'Category successfully added');
         return $response->withRedirect('/admin/categories');
     }
 
@@ -166,6 +167,7 @@ class CategoryController extends BaseController
         {
             $this->categoryRepository->update($category);
         }
+        $this->flash->addMessage(self::MESSAGE_INFO, 'Category successfully saved');
         return $response->withRedirect('/admin/categories');
     }
 
