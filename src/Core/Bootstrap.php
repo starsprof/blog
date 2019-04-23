@@ -11,16 +11,16 @@ use App\Controllers\Middleware\GuestMiddleware;
 use App\Controllers\PageController;
 use App\Controllers\UserController;
 use App\Models\Auth;
-use App\Models\Repositories\BaseRepository;
 use App\Models\Repositories\CategoryRepository;
 use App\Models\Repositories\CategoryRepositoryInterface;
 use App\Models\Repositories\UserRepository;
 use App\Models\Repositories\UserRepositoryInterface;
 use App\Models\User;
-use DebugBar\StandardDebugBar;
 use Dotenv\Dotenv;
 use Slim\App;
 use Slim\Container;
+use Tracy\Debugger;
+
 
 class Bootstrap
 {
@@ -39,16 +39,22 @@ class Bootstrap
     public function __construct()
     {
         $this->loadEnv();
+        $devMode = filter_var(getenv('DEV_MODE'), FILTER_VALIDATE_BOOLEAN);
+
+        if($devMode) {
+            Debugger::enable(false);
+        }
+
         $this->container = new Container($this->containerConfig());
         $this->bindDependencies();
         $this->app = new App($this->container);
         $this->bindRoutes();
-
-        $devMode = filter_var(getenv('DEV_MODE'), FILTER_VALIDATE_BOOLEAN);
         $this->container['devMode'] = $devMode;
+
         if($devMode) {
             $this->setUpDebugBar();
         }
+
     }
 
     /**
@@ -67,7 +73,31 @@ class Bootstrap
     {
         return [
             'settings' => [
-                'displayErrorDetails' => getenv('displayErrorDetails')
+                'displayErrorDetails' => getenv('displayErrorDetails'),
+                'addContentLengthHeader' => false,
+                'tracy' => [
+                    'showPhpInfoPanel' => 1,
+                    'showSlimRouterPanel' => 0,
+                    'showSlimEnvironmentPanel' => 0,
+                    'showSlimRequestPanel' => 1,
+                    'showSlimResponsePanel' => 1,
+                    'showSlimContainer' => 0,
+                    'showTwigPanel' => 0,
+                    'showProfilerPanel' => 0,
+                    'showVendorVersionsPanel' => 0,
+                    'showIncludedFiles' => 0,
+                    'configs' => [
+                        'ConsoleNoLogin' => 0,
+                        'ProfilerPanel' => [
+                            'show' => [
+                                'memoryUsageChart' => 1, // or false
+                                'shortProfiles' => true, // or false
+                                'timeLines' => true // or false
+                            ]
+                        ]
+                    ]
+                ]
+
             ],
         ];
     }
@@ -108,12 +138,20 @@ class Bootstrap
 
     private function setUpDebugBar()
     {
-        $debugBar = new StandardDebugBar();
+        unset($this->app->getContainer()['errorHandler']);
+        $this->container['twig_profile'] = function () {
+            return new \Twig\Profiler\Profile();
+        };
         $view = $this->container['view'];
-        $debugBarRender = $debugBar->getJavascriptRenderer();
-        $debugBarRender->setBaseUrl('\assets\debugbar');
-        $view->getEnvironment()->addGlobal('debugHead', $debugBarRender->renderHead());
-        $view->getEnvironment()->addGlobal('debugBody', $debugBarRender->render());
+        $view->addExtension(new \Twig\Extension\ProfilerExtension($this->container['twig_profile']));
+        $view->addExtension(new \Twig\Extension\DebugExtension());
+
+        Debugger::$logDirectory = getenv('ROOT').'/../logs/';
+        Debugger::getBar()->addPanel(new \App\Core\Utils\TracySessionBar());
+        Debugger::getBar()->addPanel(new \App\Core\Utils\TracyDBBar());
+        $this->app->add(new \RunTracy\Middlewares\TracyMiddleware($this->app));
+
+
     }
 
     private function bindRoutes()
