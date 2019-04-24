@@ -5,3 +5,13 @@
 .custom-file-label{
     margin: 0 15px !important;
 }
+.admin-post-list span{
+    display: block;
+}
+.admin-post-list img{
+    max-width: 200px;
+}
+.admin-post-list span.badge{
+    display: inline-block !important;
+    padding-bottom: .4rem !important;
+}

@@ -62,6 +62,20 @@ class Post
      */
     protected $category;
 
+    protected $dates = [
+        'published_at',
+        'updated_at',
+        'created_at'
+    ];
+    public function __construct()
+    {
+        foreach($this->dates as $date)
+        {
+            $property = $this->{$date};
+            $this->{$date} = new DateTime($property);
+        }
+    }
+
     /**
      * @return int
      */

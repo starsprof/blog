@@ -25,7 +25,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
     public function findOneById(int $id): ?Post
     {
         $stmt = $this->pdo->prepare('SELECT * FROM posts WHERE id=:id LIMIT 1');
-        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Post::class);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class);
         $stmt->execute(['id' => $id]);
         $post = $stmt->fetch();
         return $post ? $post : null;
@@ -38,7 +38,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
     public function findAll(): array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM posts');
-        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Post::class);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -99,9 +99,9 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
             'slug' => $post->getSlug(),
             'image' => $post->getImage(),
             'description' => $post->getDescription(),
-            'created_at' => $post->getCreatedAt(),
-            'updated_at' => $post->getUpdatedAt(),
-            'published_at' => $post->getPublishedAt(),
+            'created_at' => $post->getCreatedAt()->format("Y-m-d H:i:s"),
+            'updated_at' => $post->getUpdatedAt()->format("Y-m-d H:i:s"),
+            'published_at' => $post->getPublishedAt()->format("Y-m-d H:i:s"),
             'published' => $post->isPublished(),
             'category_id' => $post->getCategoryId(),
             'id' => $post->getId()
@@ -118,10 +118,10 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
     public function findPage(int $page, int $count): array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM posts LIMIT :limit OFFSET :offset');
-        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Post::class);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class);
         $stmt->execute([
             'limit' => $count,
-            'offset' => $page*$count
+            'offset' => (($page-1)*$count)
         ]);
         return $stmt->fetchAll();
     }

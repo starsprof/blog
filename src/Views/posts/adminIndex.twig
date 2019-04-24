@@ -11,18 +11,46 @@
             <a href="" class="btn btn-info">Add Post</a>
         </div>
     </div>
-    <ul class="list-group list-group-flush">
+    <hr>
+    <div class="container admin-post-list">
         {% for post in posts %}
-            <li class="list-group-item">
-                {{ post.getSlug }}
-                <br>
-                {{ post.getTitle }}
-                <br>
-                {{ post.getCategoryId }}
+            <div class="row">
+                <div class="col-sm-6">
+                    <span><b>Title: </b> {{ post.getTitle }}</span>
+                    <span><b>Slug: </b> {{ post.getSlug }}</span>
+                    <span><b>Category:</b> ------</span>
+                    <br>
+                    <div>
+                        <a href="" class="btn btn-outline-primary btn-sm"><i class="far fa-eye"></i> Show</a>
+                        <a href="" class="btn btn-outline-warning btn-sm"><i class="far fa-edit"></i> Edit</a>
+                        <a href="" class="btn btn-outline-danger btn-sm"><i class="far fa-trash-alt"></i> Delete</a>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <span><b>Created: </b>{{ post.getCreatedAt|date("H:i m/d/y") }}</span>
+                    <span><b>Updated: </b>{{ post.getUpdatedAt|date("H:i m/d/y") }}</span>
+                    <span><b>Publish: </b>{{ post.getPublishedAt|date("H:i m/d/y") }}</span>
+                    <span><b>State:</b>
+                        {% if post.isPublished %}
+                                <span class="badge badge-success">published</span>
+                            {% else %}
+                                <span class="badge badge-danger">hidden</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="col-sm-3">
+                    <img src="{{ post.getImage }}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
 
-            </li>
+                </div>
+                <div class="col-sm-6"></div>
+            </div>
+            <hr>
         {% endfor %}
-    </ul>
+    </div>
     <br>
     {% include 'partial/pagination.twig' with {'url' : '/posts/admin/'} %}
 

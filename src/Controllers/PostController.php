@@ -40,7 +40,7 @@ class PostController extends BaseController
             $page = 1;
         }
         $total = $this->postRepository->count();
-        $pages = ceil($total/self::PER_PAGE_COUNT) -1;
+        $pages = ceil($total/self::PER_PAGE_COUNT);
         $posts = $this->postRepository->findPage($page, self::PER_PAGE_COUNT);
         return $this->view->render($response,'posts/adminIndex.twig', ['posts' => $posts, 'page' => $page, 'pages' => $pages, 'total' => $total]);
     }
