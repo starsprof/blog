@@ -1,0 +1,29 @@
+{% extends 'template.twig' %}
+{% block head %}
+    <link rel="stylesheet" href="/assets/admin.css">
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between">
+        <h1>List Posts</h1>
+        <div>
+            <span>Total: {{ total }}</span>
+            <a href="" class="btn btn-info">Add Post</a>
+        </div>
+    </div>
+    <ul class="list-group list-group-flush">
+        {% for post in posts %}
+            <li class="list-group-item">
+                {{ post.getSlug }}
+                <br>
+                {{ post.getTitle }}
+                <br>
+                {{ post.getCategoryId }}
+
+            </li>
+        {% endfor %}
+    </ul>
+    <br>
+    {% include 'partial/pagination.twig' with {'url' : '/posts/admin/'} %}
+
+{% endblock %}

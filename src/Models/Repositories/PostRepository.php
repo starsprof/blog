@@ -62,7 +62,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
      */
     public function create(Post $post): Post
     {
-//     
+//
         $stmt = $this->pdo->prepare('INSERT INTO posts (`title`, `slug`, `image`, `description`, `created_at`,
                    `updated_at`, `published_at`, `published`, `category_id`) VALUES (
                      :title, :slug, :image, :description, :created_at,
@@ -107,5 +107,43 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
             'id' => $post->getId()
         ]);
         return (bool)$stmt->rowCount();
+    }
+
+    /**
+     * Find current page
+     * @param int $page
+     * @param int $count
+     * @return Post[]
+     */
+    public function findPage(int $page, int $count): array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM posts LIMIT :limit OFFSET :offset');
+        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Post::class);
+        $stmt->execute([
+            'limit' => $count,
+            'offset' => $page*$count
+        ]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Count post in DB
+     * @return int
+     */
+    public function count(): int
+    {
+        return $this->pdo->query('SELECT count(*) FROM posts')->fetchColumn();
+    }
+
+    /**
+     * Check is slug available
+     * @param string $slug
+     * @return bool
+     */
+    public function checkSlugAvailability(string $slug): bool
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM posts WHERE slug=:slug');
+        $stmt->execute(['slug' => $slug]);
+        return !(bool)$stmt->rowCount();
     }
 }

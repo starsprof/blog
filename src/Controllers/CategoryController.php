@@ -70,6 +70,7 @@ class CategoryController extends BaseController
         $params = $request->getParsedBody();
         $name = trim($params['inputName']);
         $description = trim($params['inputDescription']);
+
         $nameValidationErrors = Category::validateName($name);
         $descriptionValidationErrors = Category::validateDescription($description);
         $errors = array_merge($nameValidationErrors, $descriptionValidationErrors);
@@ -147,11 +148,13 @@ class CategoryController extends BaseController
                 return $this->view->render($response, 'categories/edit.twig', ['category' => $category, 'errors' => $errors]);
             }
         }
+
         if($category->getDescription()!=$newDescription)
         {
             $needUpdate = true;
             $category->setDescription($newDescription);
         }
+
         /** * @var UploadedFile[] $uploadedFiles */
         $uploadedFiles = $request->getUploadedFiles();
         if (!empty($uploadedFiles['inputImage'])) {

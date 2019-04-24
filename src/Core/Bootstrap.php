@@ -9,6 +9,7 @@ use App\Controllers\CategoryController;
 use App\Controllers\Middleware\AuthMiddleware;
 use App\Controllers\Middleware\GuestMiddleware;
 use App\Controllers\PageController;
+use App\Controllers\PostController;
 use App\Controllers\UserController;
 use App\Models\Auth;
 use App\Models\Repositories\CategoryRepository;
@@ -196,6 +197,10 @@ class Bootstrap
                 $app->post('/edit', CategoryController::class.':postEdit');
             });
             })->add(new AuthMiddleware($this->container));
+        $this->app->group('/posts', function () use ($app){
+            $app->get('/admin[/{page:[0-9]+}]', PostController::class.':adminIndex');
+            $app->map(['GET', 'POST'], '/add' ,PostController::class.':add');
+        });
     }
 
     public function run()

@@ -23,6 +23,14 @@ interface PostRepositoryInterface
     public function findAll(): array;
 
     /**
+     * Find current page
+     * @param int $page
+     * @param int $count
+     * @return Post[]
+     */
+    public function findPage(int $page, int $count): array;
+
+    /**
      * Delete one Post by Id
      * @param int $id
      * @return bool
@@ -42,6 +50,19 @@ interface PostRepositoryInterface
      * @return bool
      */
     public function update(Post $post): bool;
+
+    /**
+     * Count post in DB
+     * @return int
+     */
+    public function count():int;
+
+    /**
+     * Check is slug available
+     * @param string $slug
+     * @return bool
+     */
+    public function checkSlugAvailability(string $slug):bool ;
 
 
 }
