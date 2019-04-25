@@ -1,26 +1,31 @@
-<form action="/admin/posts/add" method="post">
+<form action="/admin/posts/add" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label for="inputTitle">Title</label>
-        <input type="text"  class="form-control is-invalid" name="inputTitle" id="inputTitle" aria-describedby="helpTitle" placeholder="Post Title">
+        <input type="text" value="{{ post.getTitle }}"  class="form-control {{ validate ? (errors.title is defined ? 'is-invalid' : 'is-valid') : '' }}" name="inputTitle" id="inputTitle" aria-describedby="helpTitle" placeholder="Post Title">
         <small id="helpTitle" class="form-text text-muted">Required, at least 5 characters</small>
         <div class="invalid-feedback ">
-            Please choose a username.
+            {{ errors.title }}
         </div>
     </div>
     <div class="form-group">
         <label for="inputSlug">Slug:</label>
-        <input type="text" class="form-control" name="inputSlug" id="inputSlug" aria-describedby="helpSlug" placeholder="Post Slug">
-        <small id="helpSlug" class="form-text text-muted">Required, at least 5 characters without spaces and special characters ('a-z', 'A-Z', '0-9' and '-')</small>
-
+        <input type="text" value="{{ post.getSlug }}" class="form-control {{ validate ? (errors.slug is defined ? 'is-invalid' : 'is-valid') : '' }}" name="inputSlug" id="inputSlug" aria-describedby="helpSlug" placeholder="Post Slug">
+        <small id="helpSlug" class="form-text text-muted">Required, at least 5 characters without spaces and special characters (only a-Z, 0-9 and "-")</small>
+        <div class="invalid-feedback ">
+            {{ errors.slug }}
+        </div>
     </div>
     <div class="form-group">
         <label for="inputCategoryId">Category: </label>
-        <select class="form-control" name="inputCategoryId" id="inputCategoryId" aria-describedby="helpCategory">
+        <select class="form-control {{ validate ? (errors.category is defined ? 'is-invalid' : 'is-valid') : '' }}" name="inputCategoryId" id="inputCategoryId" aria-describedby="helpCategory">
             {% for id, name in categories %}
-                <option value="{{ id }}">{{ name }}</option>
+                <option value="{{ id }}" {{ id==post.getCategoryId ? 'selected' : '' }}>{{ name }}</option>
             {% endfor %}
         </select>
         <small id="helpCategory" class="form-text text-muted">Required, please select category</small>
+        <div class="invalid-feedback ">
+            {{ errors.category }}
+        </div>
     </div>
     <div class="form-group">
         <label for="inputImage">Image:</label>
@@ -32,29 +37,58 @@
     </div>
     <div class="form-group">
         <label for="inputDescription">Description:</label>
-        <textarea class="form-control" name="inputDescription" id="inputDescription"  aria-describedby="helpDescription" rows="3"></textarea>
+        <textarea class="form-control {{ validate ? (errors.description is defined ? 'is-invalid' : 'is-valid') : '' }}" name="inputDescription" id="inputDescription"  aria-describedby="helpDescription" placeholder="Input post description here">
+            {{ post.getDescription }}
+        </textarea>
         <small id="helpDescription" class="form-text text-muted">Required, first paragraph of post</small>
+        <div class="invalid-feedback ">
+            {{ errors.description }}
+        </div>
     </div>
-{#    https://mdbootstrap.com/plugins/jquery/wysiwyg/#}
     <div class="form-group">
         <label for="inputBody">Text: </label>
-        <textarea class="form-control" name="inputBody" id="inputBody" aria-describedby="helpBody" rows="5"></textarea>
+        <textarea class="form-control {{ validate ? (errors.body is defined ? 'is-invalid' : 'is-valid') : '' }}" name="inputBody" id="inputBody" aria-describedby="helpBody"  placeholder="Input post text here">
+            {{ post.getBody }}
+        </textarea>
         <small id="helpBody" class="form-text text-muted">Required, post Content</small>
+        <div class="invalid-feedback ">
+            {{ errors.body }}
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="inputPublishAt">Publish date and time</label>
+        <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+            <input type="text"
+                   value="{{ post.getPublishedAt|date('Y-m-d H:i:s') }}"
+                   id="inputPublishAt"
+                   name="inputPublishAt"
+                   class="form-control datetimepicker-input {{ validate ? (errors.publishAt is defined ? 'is-invalid' : 'is-valid') : '' }}"
+                   data-target="#datetimepicker1"/>
+            <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+            </div>
+        </div>
+        <small class="form-text text-muted">Select date and time</small>
+        <div class="invalid-feedback ">
+            {{ errors.publishAt }}
+        </div>
     </div>
     <div class="form-group">
         <label for="">State: </label>
         <br>
         <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inputPublish" id="inputPublish1" checked value="1">
+            <input class="form-check-input" type="radio" name="inputPublish" id="inputPublish1" {{ post.isPublished ? 'checked' : ''}}  value="1">
             <label class="form-check-label" for="inputPublish1">Published</label>
         </div>
         <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inputPublish" id="inputPublish0" value="0">
+            <input class="form-check-input" type="radio" name="inputPublish" id="inputPublish0"  {{ not post.isPublished ? 'checked' : ''}} value="0">
             <label class="form-check-label" for="inputPublish0">Draft</label>
         </div>
+        <small class="form-text text-muted">Select state</small>
     </div>
     {% if errors is not empty %}
         <div class="alert alert-danger" role="alert">
+            Summary
             <ul>
                 {% for error in errors %}
                     <li>{{ error }}</li>

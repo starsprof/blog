@@ -188,27 +188,11 @@ class Post extends BaseModel
     }
 
     /**
-     * @param DateTime $created_at
-     */
-    public function setCreatedAt(DateTime $created_at): void
-    {
-        $this->created_at = $created_at;
-    }
-
-    /**
      * @return DateTime
      */
     public function getUpdatedAt(): DateTime
     {
         return $this->updated_at;
-    }
-
-    /**
-     * @param DateTime $updated_at
-     */
-    public function setUpdatedAt(DateTime $updated_at): void
-    {
-        $this->updated_at = $updated_at;
     }
 
     /**
@@ -243,6 +227,7 @@ class Post extends BaseModel
     {
         $this->published = $published;
     }
+
 
     /**
      * @return int
@@ -279,25 +264,37 @@ class Post extends BaseModel
         try{
             v::length(5)
                 ->setName('Title')
-                ->assert($post->getTitle());
+                ->assert(trim($post->getTitle()));
         }catch (NestedValidationException $exception) {
-            $errors['title'] = $exception->getMessages();
+            $errors['title'] = $exception->getFullMessage();
         }finally{
             try{
                 v::slug()
                     ->setName('Slug')
                     ->assert($post->getSlug());
             }catch (NestedValidationException $exception) {
-                $errors['slug'] = $exception->getMessages();
+                $errors['slug'] = $exception->getFullMessage();
             }finally{
                 try{
                     v::length(30)
                         ->setName('Description')
-                        ->assert($post->getDescription());
+                        ->assert(trim($post->getDescription()));
                 }catch (NestedValidationException $exception) {
-                    $errors['description'] = $exception->getMessages();
+                    $errors['description'] = $exception->getFullMessage();
+                }finally{
+                    try{
+                        v::length(50)
+                            ->setName('Text')
+                            ->assert(trim($post->getBody()));
+                    }catch (NestedValidationException $exception) {
+                        $errors['body'] = $exception->getFullMessage();
+                    }
                 }
             }
+        }
+        foreach ($errors as &$error)
+        {
+            $error = ltrim( $error, '- ');
         }
         return $errors;
     }

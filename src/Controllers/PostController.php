@@ -10,6 +10,7 @@ use App\Models\Repositories\PostRepositoryInterface;
 use Psr\Container\ContainerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Slim\Http\UploadedFile;
 
 class PostController extends BaseController
 {
@@ -62,17 +63,71 @@ class PostController extends BaseController
 
     public function add(Request $request, Response $response)
     {
+        $categories = $this->postRepository->getCategoriesKeysPairs();
         if($request->isGet())
         {
-            $categories = $this->postRepository->getCategoriesKeysPairs();
-            return $this->view->render($response, 'posts/add.twig', ['categories' => $categories]);
+            return $this->view->render($response, 'posts/add.twig', ['categories' => $categories, 'validate' => false]);
         }
         $params = $request->getParsedBody();
         $post = new Post($this->container);
         $post->setSlug($params['inputSlug']);
         $post->setTitle($params['inputTitle']);
         $post->setDescription($params['inputDescription']);
+        $post->setBody($params['inputBody']);
+        $post->setCategoryId($params['inputCategoryId']);
+        $post->setPublishedAt(\DateTime::createFromFormat('Y-m-d H:i',$params['inputPublishAt']));
+        $post->setPublished($params['inputPublish']);
         $errors = Post::validate($post);
-        var_dump($errors);
+        if(! $this->postRepository->checkSlugAvailability($post->getSlug()))
+        {
+            $errors['slug'] = 'Slug already used';
+        }
+        if(!empty($errors))
+        {
+            return $this->view->render($response, 'posts/add.twig', [
+                'categories' => $categories,
+                'errors' => $errors,
+                'post' => $post,
+                'validate' => true
+            ]);
+
+        }
+        $uploadedFiles = $request->getUploadedFiles();
+        if (!empty($uploadedFiles['inputImage'])) {
+            $directory = getenv('ROOT') . '/public/' . getenv('UPLOAD_DIR');
+            $uploadedFile = $uploadedFiles['inputImage'];
+            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+                $filename = $this->moveUploadedFile($directory, $uploadedFile);
+                $post->setImage('/' . getenv('UPLOAD_DIR') . '/' . $filename);
+            }
+        }
+        $newPost = $this->postRepository->create($post);
+        return $response->withRedirect('/admin/posts/view/'.$newPost->getId());
+    }
+
+    public function edit(Request $request, Response $response)
+    {
+
+    }
+    public function uploadImage(Request $request, Response $response)
+    {
+
+        /** * @var UploadedFile[] $uploadedFiles */
+        try {
+            $uploadedFiles = $request->getUploadedFiles();
+            if (!empty($uploadedFiles['upload'])) {
+                $directory = getenv('ROOT') . '/public/' . getenv('UPLOAD_DIR');
+                $uploadedFile = $uploadedFiles['upload'];
+                if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+                    $filename = $this->moveUploadedFile($directory, $uploadedFile);
+                    $url = '/' . getenv('UPLOAD_DIR') . '/' . $filename;
+                    return  $response->withJson(['uploaded' => true, 'url' => $url]);
+                }
+            }
+        }catch (\Exception $exception) {
+            return $response->withJson(['uploaded' => false, 'error' => ['message' => 'could not upload this image']]);
+        }
+        return  $response->withJson(['uploaded' => false, 'error' => ['message' => 'bad image']]);
+
     }
 }

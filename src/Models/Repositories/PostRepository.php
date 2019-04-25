@@ -73,8 +73,8 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
             'image' => $post->getImage(),
             'description' => $post->getDescription(),
             'body' => $post->getBody(),
-            'created_at' => $post->getCreatedAt()->format("Y-m-d H:i:s"),
-            'updated_at' => $post->getUpdatedAt()->format("Y-m-d H:i:s"),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
             'published_at' => $post->getPublishedAt()->format("Y-m-d H:i:s"),
             'published' => (int) $post->isPublished(),
             'category_id' => $post->getCategoryId()
@@ -92,7 +92,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
     public function update(Post $post): bool
     {
         $stmt = $this->pdo->prepare('UPDATE posts SET
-                title=:title, slug=:slug, image=:image, description=:description, body=:body created_at=:created_at,
+                title=:title, slug=:slug, image=:image, description=:description, body=:body, created_at=:created_at,
                 updated_at=:updated_at, published_at=:published_at, published=:published, category_id=:category_id
                 WHERE id=:id');
         $stmt->execute([
@@ -102,7 +102,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
             'description' => $post->getDescription(),
             'body' => $post->getBody(),
             'created_at' => $post->getCreatedAt()->format("Y-m-d H:i:s"),
-            'updated_at' => $post->getUpdatedAt()->format("Y-m-d H:i:s"),
+            'updated_at' => date('Y-m-d H:i:s'),
             'published_at' => $post->getPublishedAt()->format("Y-m-d H:i:s"),
             'published' => $post->isPublished(),
             'category_id' => $post->getCategoryId(),
@@ -119,7 +119,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
      */
     public function findPage(int $page, int $count): array
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM posts LIMIT :limit OFFSET :offset');
+        $stmt = $this->pdo->prepare('SELECT * FROM posts ORDER BY updated_at DESC LIMIT :limit OFFSET :offset');
         $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class, [$this->container]);
         $stmt->execute([
             'limit' => $count,
