@@ -148,4 +148,13 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
         $stmt->execute(['slug' => $slug]);
         return !(bool)$stmt->rowCount();
     }
+
+    /** Get category array ['id' => 'name']
+     * @return array
+     */
+    public function getCategoriesKeysPairs(): array
+    {
+        $stmt = $this->pdo->query('SELECT `id`, `name` FROM categories');
+        return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+    }
 }

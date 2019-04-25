@@ -64,5 +64,8 @@ interface PostRepositoryInterface
      */
     public function checkSlugAvailability(string $slug):bool ;
 
-
+    /** Get category array ['id' => 'name']
+     * @return array
+     */
+    public function getCategoriesKeysPairs(): array ;
 }

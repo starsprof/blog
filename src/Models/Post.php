@@ -7,6 +7,9 @@ namespace App\Models;
 use App\Models\Repositories\CategoryRepositoryInterface;
 use DateTime;
 use Psr\Container\ContainerInterface;
+use Respect\Validation\Exceptions\NestedValidationException;
+use \Respect\Validation\Validator as v;
+
 
 /**
  * Class Post
@@ -263,6 +266,40 @@ class Post extends BaseModel
     public function getCategory(): Category
     {
         return $this->category;
+    }
+
+    /**
+     * Validate Post properties
+     * @param Post $post
+     * @return array
+     */
+    public static function validate(Post $post): array
+    {
+        $errors = [];
+        try{
+            v::length(5)
+                ->setName('Title')
+                ->assert($post->getTitle());
+        }catch (NestedValidationException $exception) {
+            $errors['title'] = $exception->getMessages();
+        }finally{
+            try{
+                v::slug()
+                    ->setName('Slug')
+                    ->assert($post->getSlug());
+            }catch (NestedValidationException $exception) {
+                $errors['slug'] = $exception->getMessages();
+            }finally{
+                try{
+                    v::length(30)
+                        ->setName('Description')
+                        ->assert($post->getDescription());
+                }catch (NestedValidationException $exception) {
+                    $errors['description'] = $exception->getMessages();
+                }
+            }
+        }
+        return $errors;
     }
 
 }

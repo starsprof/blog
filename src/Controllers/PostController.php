@@ -4,6 +4,7 @@
 namespace App\Controllers;
 
 
+use App\Models\Post;
 use App\Models\Repositories\CategoryRepositoryInterface;
 use App\Models\Repositories\PostRepositoryInterface;
 use Psr\Container\ContainerInterface;
@@ -47,14 +48,13 @@ class PostController extends BaseController
 
     public function adminView(Request $request, Response $response)
     {
-        $id =(int) $request->getAttribute('id');
+        $id = (int) $request->getAttribute('id');
         $post = $this->postRepository->findOneById($id);
         if(empty($post))
         {
             throw new \Slim\Exception\NotFoundException($request, $response);
         }
-        $category = $this->categoryRepository->findOneById($post->getCategoryId());
-        return $this->view->render($response, 'posts/adminView.twig', ['post' => $post, 'category' => $category]);
+        return $this->view->render($response, 'posts/adminView.twig', ['post' => $post]);
     }
     public function index()
     {
@@ -62,6 +62,17 @@ class PostController extends BaseController
 
     public function add(Request $request, Response $response)
     {
-        echo PostController::class;
+        if($request->isGet())
+        {
+            $categories = $this->postRepository->getCategoriesKeysPairs();
+            return $this->view->render($response, 'posts/add.twig', ['categories' => $categories]);
+        }
+        $params = $request->getParsedBody();
+        $post = new Post($this->container);
+        $post->setSlug($params['inputSlug']);
+        $post->setTitle($params['inputTitle']);
+        $post->setDescription($params['inputDescription']);
+        $errors = Post::validate($post);
+        var_dump($errors);
     }
 }

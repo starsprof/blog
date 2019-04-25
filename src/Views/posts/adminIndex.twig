@@ -8,7 +8,7 @@
         <h1>List Posts</h1>
         <div>
             <span>Total: {{ total }}</span>
-            <a href="" class="btn btn-info">Add Post</a>
+            <a href="/admin/posts/add" class="btn btn-info">Add Post</a>
         </div>
     </div>
     <hr>
@@ -52,7 +52,7 @@
                             <span>{% if post.isPublished %}
                                 <span class="badge badge-success">published</span>
                             {% else %}
-                                    <span class="badge badge-danger">hidden</span>
+                                    <span class="badge badge-danger">draft</span>
                                 {% endif %}</span>
                         </div>
                     </div>

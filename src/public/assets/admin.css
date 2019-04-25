@@ -1,8 +1,8 @@
-.category-small{
+.category-small-img{
     max-width: 200px;
     max-height: 150px;
 }
-.custom-file-label{
+.admin-category-form .custom-file-label{
     margin: 0 15px !important;
 }
 .admin-post-list span{

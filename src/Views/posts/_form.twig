@@ -1,0 +1,68 @@
+<form action="/admin/posts/add" method="post">
+    <div class="form-group">
+        <label for="inputTitle">Title</label>
+        <input type="text"  class="form-control is-invalid" name="inputTitle" id="inputTitle" aria-describedby="helpTitle" placeholder="Post Title">
+        <small id="helpTitle" class="form-text text-muted">Required, at least 5 characters</small>
+        <div class="invalid-feedback ">
+            Please choose a username.
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="inputSlug">Slug:</label>
+        <input type="text" class="form-control" name="inputSlug" id="inputSlug" aria-describedby="helpSlug" placeholder="Post Slug">
+        <small id="helpSlug" class="form-text text-muted">Required, at least 5 characters without spaces and special characters ('a-z', 'A-Z', '0-9' and '-')</small>
+
+    </div>
+    <div class="form-group">
+        <label for="inputCategoryId">Category: </label>
+        <select class="form-control" name="inputCategoryId" id="inputCategoryId" aria-describedby="helpCategory">
+            {% for id, name in categories %}
+                <option value="{{ id }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+        <small id="helpCategory" class="form-text text-muted">Required, please select category</small>
+    </div>
+    <div class="form-group">
+        <label for="inputImage">Image:</label>
+        <div class="custom-file">
+            <input type="file" class="custom-file-input" name="inputImage" id="inputImage">
+            <label class="custom-file-label" for="inputImage">Choose Image</label>
+        </div>
+        <small class="form-text text-muted">Please select image file</small>
+    </div>
+    <div class="form-group">
+        <label for="inputDescription">Description:</label>
+        <textarea class="form-control" name="inputDescription" id="inputDescription"  aria-describedby="helpDescription" rows="3"></textarea>
+        <small id="helpDescription" class="form-text text-muted">Required, first paragraph of post</small>
+    </div>
+{#    https://mdbootstrap.com/plugins/jquery/wysiwyg/#}
+    <div class="form-group">
+        <label for="inputBody">Text: </label>
+        <textarea class="form-control" name="inputBody" id="inputBody" aria-describedby="helpBody" rows="5"></textarea>
+        <small id="helpBody" class="form-text text-muted">Required, post Content</small>
+    </div>
+    <div class="form-group">
+        <label for="">State: </label>
+        <br>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inputPublish" id="inputPublish1" checked value="1">
+            <label class="form-check-label" for="inputPublish1">Published</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inputPublish" id="inputPublish0" value="0">
+            <label class="form-check-label" for="inputPublish0">Draft</label>
+        </div>
+    </div>
+    {% if errors is not empty %}
+        <div class="alert alert-danger" role="alert">
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <div class="fd-flex justify-content-end">
+        <button  type="submit" class="btn btn-primary float-right"><i class="far fa-save"></i> Save</button>
+    </div>
+</form>
