@@ -102,6 +102,7 @@ class PostController extends BaseController
             }
         }
         $newPost = $this->postRepository->create($post);
+        $this->flash->addMessage(self::MESSAGE_INFO, 'Post added');
         return $response->withRedirect('/admin/posts/view/'.$newPost->getId());
     }
     public function getEdit(Request $request, Response $response)
@@ -161,9 +162,17 @@ class PostController extends BaseController
         }
 
         $this->postRepository->update($post);
+        $this->flash->addMessage(self::MESSAGE_INFO, 'Post updated');
         return $response->withRedirect('/admin/posts/view/'.$post->getId());
     }
 
+    public function delete(Request $request, Response $response)
+    {
+        $id = (int) $request->getParsedBody()['id'];
+        $this->postRepository->deleteOneById($id);
+        $this->flash->addMessage(self::MESSAGE_WARNING, 'Post successfully deleted');
+        return $response->withRedirect('/admin/posts');
+    }
     public function uploadImage(Request $request, Response $response)
     {
 

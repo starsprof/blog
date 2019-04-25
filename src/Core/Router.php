@@ -51,6 +51,7 @@ class Router
                     $app->get('/view/{id:[0-9]+}', PostController::class.':adminView');
                     $app->get( '/edit/{id:[0-9]+}' ,PostController::class.':getEdit');
                     $app->post( '/edit' ,PostController::class.':postEdit');
+                    $app->delete('/delete', PostController::class.':delete');
                     $app->map(['GET', 'POST'], '/add' ,PostController::class.':add');
                     $app->map(['GET', 'POST'], '/upload-image', PostController::class.':uploadImage');
                 });
