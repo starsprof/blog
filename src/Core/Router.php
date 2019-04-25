@@ -49,7 +49,8 @@ class Router
                 $app->group('/posts', function () use ($app){
                     $app->get('[/{page:[0-9]+}]', PostController::class.':adminIndex');
                     $app->get('/view/{id:[0-9]+}', PostController::class.':adminView');
-                    $app->map(['GET', 'POST'], '/edit/{id:[0-9]+}' ,PostController::class.':edit');
+                    $app->get( '/edit/{id:[0-9]+}' ,PostController::class.':getEdit');
+                    $app->post( '/edit' ,PostController::class.':postEdit');
                     $app->map(['GET', 'POST'], '/add' ,PostController::class.':add');
                     $app->map(['GET', 'POST'], '/upload-image', PostController::class.':uploadImage');
                 });

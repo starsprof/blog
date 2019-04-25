@@ -10,7 +10,7 @@
 {% block content %}
     <h1>Write new post</h1>
     <hr>
-    {% include 'posts/_form.twig' %}
+    {% include 'posts/_form.twig' with {'path' : 'add'}%}
 
 {% endblock %}
 {% block footer %}

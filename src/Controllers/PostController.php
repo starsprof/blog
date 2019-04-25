@@ -104,11 +104,66 @@ class PostController extends BaseController
         $newPost = $this->postRepository->create($post);
         return $response->withRedirect('/admin/posts/view/'.$newPost->getId());
     }
-
-    public function edit(Request $request, Response $response)
+    public function getEdit(Request $request, Response $response)
     {
-
+        $id = (int) $request->getAttribute('id');
+        $post = $this->postRepository->findOneById($id);
+        if(empty($post))
+        {
+            throw new \Slim\Exception\NotFoundException($request, $response);
+        }
+        $categories = $this->postRepository->getCategoriesKeysPairs();
+        return $this->view->render($response, 'posts/edit.twig', [
+            'categories' => $categories,
+            'post' => $post,
+            'validate' => false
+        ]);
     }
+
+    public function postEdit(Request $request, Response $response)
+    {
+        $params = $request->getParsedBody();
+        $post = $this->postRepository->findOneById($params['id']);
+        $post->setTitle($params['inputTitle']);
+        $post->setDescription($params['inputDescription']);
+        $post->setBody($params['inputBody']);
+        $post->setCategoryId($params['inputCategoryId']);
+        $post->setPublishedAt(\DateTime::createFromFormat('Y-m-d H:i',$params['inputPublishAt']));
+        $post->setPublished($params['inputPublish']);
+
+        if($post->getSlug()!=$params['inputSlug'])
+        {
+            if(!$this->postRepository->checkSlugAvailability($params['inputSlug']))
+            {
+                $errors['slug'] = 'Slug already used';
+            }
+            $post->setSlug($params['inputSlug']);
+        }
+
+        if(!empty($errors))
+        {
+            $categories = $this->postRepository->getCategoriesKeysPairs();
+            return $this->view->render($response, 'posts/edit.twig', [
+                'categories' => $categories,
+                'errors' => $errors,
+                'post' => $post,
+                'validate' => true
+            ]);
+        }
+        $uploadedFiles = $request->getUploadedFiles();
+        if (!empty($uploadedFiles['inputImage'])) {
+            $directory = getenv('ROOT') . '/public/' . getenv('UPLOAD_DIR');
+            $uploadedFile = $uploadedFiles['inputImage'];
+            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+                $filename = $this->moveUploadedFile($directory, $uploadedFile);
+                $post->setImage('/' . getenv('UPLOAD_DIR') . '/' . $filename);
+            }
+        }
+
+        $this->postRepository->update($post);
+        return $response->withRedirect('/admin/posts/view/'.$post->getId());
+    }
+
     public function uploadImage(Request $request, Response $response)
     {
 

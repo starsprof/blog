@@ -8,9 +8,9 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Write new post</h1>
+    <h1>Update post</h1>
     <hr>
-    {% include 'posts/_form.twig' %}
+    {% include 'posts/_form.twig' with {'path' : 'edit'}%}
 
 {% endblock %}
 {% block footer %}

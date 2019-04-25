@@ -1,4 +1,7 @@
-<form action="/admin/posts/add" method="post" enctype="multipart/form-data">
+<form action="/admin/posts/{{ path }}" method="post" enctype="multipart/form-data">
+    {% if path=='edit' %}
+        <input type="hidden" name="id" value="{{ post.getId }}">
+    {% endif %}
     <div class="form-group">
         <label for="inputTitle">Title</label>
         <input type="text" value="{{ post.getTitle }}"  class="form-control {{ validate ? (errors.title is defined ? 'is-invalid' : 'is-valid') : '' }}" name="inputTitle" id="inputTitle" aria-describedby="helpTitle" placeholder="Post Title">
