@@ -16,27 +16,46 @@
         {% for post in posts %}
             <div class="row">
                 <div class="col-sm-6">
-                    <span><b>Title: </b> {{ post.getTitle }}</span>
-                    <span><b>Slug: </b> {{ post.getSlug }}</span>
-                    <span><b>Category:</b> ------</span>
+                    <div class="row d-flex justify-content-start flex-nowrap">
+                        <span class="mr-1"><b>Title:</b> </span>
+                        <span> {{ post.getTitle }} </span>
+                    </div>
+                    <div class="row d-flex justify-content-start flex-nowrap">
+                        <span class="mr-1"><b>Slug:</b> </span>
+                        <span> {{ post.getSlug }} </span>
+                    </div>
+                    <div class="row d-flex justify-content-start flex-nowrap">
+                        <span class="mr-1"><b>Category:</b> </span>
+                        <span> {{ post.getCategory.getName }} </span>
+                    </div>
                     <br>
                     <div>
-                        <a href="" class="btn btn-outline-primary btn-sm"><i class="far fa-eye"></i> Show</a>
+                        <a href="/admin/posts/view/{{ post.getId }}" class="btn btn-outline-primary btn-sm">
+                            <i class="far fa-eye"></i> Show
+                        </a>
                         <a href="" class="btn btn-outline-warning btn-sm"><i class="far fa-edit"></i> Edit</a>
                         <a href="" class="btn btn-outline-danger btn-sm"><i class="far fa-trash-alt"></i> Delete</a>
                     </div>
                 </div>
                 <div class="col-sm-3">
-                    <span><b>Created: </b>{{ post.getCreatedAt|date("H:i m/d/y") }}</span>
-                    <span><b>Updated: </b>{{ post.getUpdatedAt|date("H:i m/d/y") }}</span>
-                    <span><b>Publish: </b>{{ post.getPublishedAt|date("H:i m/d/y") }}</span>
-                    <span><b>State:</b>
-                        {% if post.isPublished %}
+                    <div class="row d-flex justify-content-between">
+                        <div>
+                            <span><b>Created: </b></span>
+                            <span><b>Updated: </b></span>
+                            <span><b>Publish: </b></span>
+                            <span><b>State: </b></span>
+                        </div>
+                        <div>
+                            <span>{{ post.getCreatedAt|date("H:i m/d/y") }}</span>
+                            <span>{{ post.getUpdatedAt|date("H:i m/d/y") }}</span>
+                            <span>{{ post.getPublishedAt|date("H:i m/d/y") }}</span>
+                            <span>{% if post.isPublished %}
                                 <span class="badge badge-success">published</span>
                             {% else %}
-                                <span class="badge badge-danger">hidden</span>
-                        {% endif %}
-                    </span>
+                                    <span class="badge badge-danger">hidden</span>
+                                {% endif %}</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-sm-3">
                     <img src="{{ post.getImage }}">
@@ -52,6 +71,5 @@
         {% endfor %}
     </div>
     <br>
-    {% include 'partial/pagination.twig' with {'url' : '/posts/admin/'} %}
-
+    {% include 'partial/pagination.twig' with {'url' : '/admin/posts/'} %}
 {% endblock %}

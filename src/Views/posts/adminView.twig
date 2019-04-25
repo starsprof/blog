@@ -1,0 +1,45 @@
+{% extends 'template.twig' %}
+{% block head %}
+    <link rel="stylesheet" href="/assets/admin.css">
+{% endblock %}
+
+{% block content %}
+    <div class="container admin-post-view">
+        <div class="row flex-column">
+            <h3 class="d-block">
+                {{ post.getTitle }}
+                {% if post.isPublished %}
+                    <span class="badge badge-success">published</span>
+                {% else %}
+                    <span class="badge badge-danger">hidden</span>
+                {% endif %}
+            </h3>
+            <p class="d-block"><b>Slug: </b> {{ post.getSlug }}</p>
+            <div>
+                <a href="" class="btn btn-outline-warning btn-sm"><i class="far fa-edit"></i> Edit</a>
+                <a href="" class="btn btn-outline-danger btn-sm"><i class="far fa-trash-alt"></i> Delete</a>
+            </div>
+        </div>
+        <div class="row justify-content-between">
+             <div class="d-flex justify-content-start flex-column">
+                <span class="d-block mt-2"><b>Category: </b>{{ post.getCategory.getName }}</span>
+                <span class="d-block mt-2"><b>Created: </b>{{ post.getCreatedAt|date("H:i m/d/y") }}</span>
+                <span class="d-block mt-2"><b>Updated: </b>{{ post.getUpdatedAt|date("H:i m/d/y") }}</span>
+                <span class="d-block mt-2"><b>Publish: </b>{{ post.getPublishedAt|date("H:i m/d/y") }}</span>
+            </div>
+            <div>
+                <img class="post-image img-thumbnail" src="{{ post.getImage }}" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div><h5>Description</h5></div>
+            {{ post.getDescription | raw }}
+        </div>
+        <div class="row">
+            <div><h5>Text</h5></div>
+            {{ post.getBody | raw }}
+        </div>
+    </div>
+
+{#<img src="{{ post.getImage }}" alt="">#}
+{% endblock %}

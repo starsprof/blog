@@ -32,7 +32,7 @@ $categoryIds = array_map(function ($category){
 },$categories);
 
 for($i=1; $i<50; $i++) {
-    $post = new Post();
+    $post = new Post($bootstrap->container);
     $post->setTitle($faker->sentence);
     $post->setSlug($faker->unique()->slug);
     $post->setDescription($faker->text(rand(300, 700)));

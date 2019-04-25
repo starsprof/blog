@@ -4,13 +4,6 @@
 namespace App\Core;
 
 
-use App\Controllers\AuthController;
-use App\Controllers\CategoryController;
-use App\Controllers\Middleware\AuthMiddleware;
-use App\Controllers\Middleware\GuestMiddleware;
-use App\Controllers\PageController;
-use App\Controllers\PostController;
-use App\Controllers\UserController;
 use App\Models\Auth;
 use App\Models\Repositories\CategoryRepository;
 use App\Models\Repositories\CategoryRepositoryInterface;
@@ -51,7 +44,7 @@ class Bootstrap
         $this->container = new Container($this->containerConfig());
         $this->bindDependencies();
         $this->app = new App($this->container);
-        $this->bindRoutes();
+        Router::setRoutes($this->app);
         $this->container['devMode'] = $devMode;
 
         if($devMode) {
@@ -140,7 +133,6 @@ class Bootstrap
                 new \Slim\Flash\Messages()
             ));
             $view->getEnvironment()->addGlobal('auth', $container->get(Auth::class));
-
             return $view;
         };
 
@@ -155,52 +147,12 @@ class Bootstrap
         $view = $this->container['view'];
         $view->addExtension(new \Twig\Extension\ProfilerExtension($this->container['twig_profile']));
         $view->addExtension(new \Twig\Extension\DebugExtension());
-
         //Debugger::$logDirectory = getenv('ROOT').'/../logs/';
         Debugger::getBar()->addPanel(new \App\Core\Utils\TracySessionBar());
         Debugger::getBar()->addPanel(new \App\Core\Utils\TracyDBBar());
         $this->app->add(new \RunTracy\Middlewares\TracyMiddleware($this->app));
 
 
-    }
-
-    private function bindRoutes()
-    {
-        $this->app
-            ->get('/', PageController::class.':home')
-            ->setName('home');
-
-        $this->app
-            ->map(['GET', 'POST'], '/signin', AuthController::class.':signIn')
-            ->setName('signIn')
-            ->add(new GuestMiddleware($this->container));
-
-        $this->app
-            ->map(['GET', 'POST'], '/signup', AuthController::class.':signUp')
-            ->add(new GuestMiddleware($this->container));
-
-        $this->app
-            ->get('/signOut', AuthController::class.':signOut')
-            ->add(new AuthMiddleware($this->container));
-
-        $this->app
-            ->map(['GET', 'POST'], '/profile', UserController::class.':profile')
-            ->add(new AuthMiddleware($this->container));
-        $app = &$this->app;
-        $this->app
-            ->group('/admin', function () use ($app) {
-            $app->group('/categories', function () use ($app){
-                $app->get('[/{page:[0-9]+}]', CategoryController::class.':adminIndex');
-                $app->delete('/delete', CategoryController::class.':adminRemove');
-                $app->map(['GET', 'POST'], '/add', CategoryController::class.':adminAdd');
-                $app->get('/edit/{id:[0-9]+}', CategoryController::class.':getEdit');
-                $app->post('/edit', CategoryController::class.':postEdit');
-            });
-            })->add(new AuthMiddleware($this->container));
-        $this->app->group('/posts', function () use ($app){
-            $app->get('/admin[/{page:[0-9]+}]', PostController::class.':adminIndex');
-            $app->map(['GET', 'POST'], '/add' ,PostController::class.':add');
-        });
     }
 
     public function run()

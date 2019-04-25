@@ -14,6 +14,7 @@ try {
                 `slug`         varchar(100)  NOT NULL,
                 `image`        varchar(255) DEFAULT NULL,
                 `description`  longtext     NOT NULL,
+                `body`         longtext     NOT NULL,
                 `created_at`   datetime     NOT NULL,
                 `updated_at`   datetime     NOT NULL,
                 `published_at` datetime     DEFAULT NULL,

@@ -25,7 +25,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
     public function findOneById(int $id): ?Post
     {
         $stmt = $this->pdo->prepare('SELECT * FROM posts WHERE id=:id LIMIT 1');
-        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class, [$this->container]);
         $stmt->execute(['id' => $id]);
         $post = $stmt->fetch();
         return $post ? $post : null;
@@ -38,7 +38,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
     public function findAll(): array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM posts');
-        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class, [$this->container]);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -63,15 +63,16 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
     public function create(Post $post): Post
     {
 //
-        $stmt = $this->pdo->prepare('INSERT INTO posts (`title`, `slug`, `image`, `description`, `created_at`,
+        $stmt = $this->pdo->prepare('INSERT INTO posts (`title`, `slug`, `image`, `description`, `body`, `created_at`,
                    `updated_at`, `published_at`, `published`, `category_id`) VALUES (
-                     :title, :slug, :image, :description, :created_at,
+                     :title, :slug, :image, :description, :body, :created_at,
                    :updated_at, :published_at, :published, :category_id)');
         $stmt->execute([
             'title' => $post->getTitle(),
             'slug' => $post->getSlug(),
             'image' => $post->getImage(),
             'description' => $post->getDescription(),
+            'body' => $post->getBody(),
             'created_at' => $post->getCreatedAt()->format("Y-m-d H:i:s"),
             'updated_at' => $post->getUpdatedAt()->format("Y-m-d H:i:s"),
             'published_at' => $post->getPublishedAt()->format("Y-m-d H:i:s"),
@@ -91,7 +92,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
     public function update(Post $post): bool
     {
         $stmt = $this->pdo->prepare('UPDATE posts SET
-                title=:title, slug=:slug, image=:image, description=:description, created_at=:created_at,
+                title=:title, slug=:slug, image=:image, description=:description, body=:body created_at=:created_at,
                 updated_at=:updated_at, published_at=:published_at, published=:published, category_id=:category_id
                 WHERE id=:id');
         $stmt->execute([
@@ -99,6 +100,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
             'slug' => $post->getSlug(),
             'image' => $post->getImage(),
             'description' => $post->getDescription(),
+            'body' => $post->getBody(),
             'created_at' => $post->getCreatedAt()->format("Y-m-d H:i:s"),
             'updated_at' => $post->getUpdatedAt()->format("Y-m-d H:i:s"),
             'published_at' => $post->getPublishedAt()->format("Y-m-d H:i:s"),
@@ -118,7 +120,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
     public function findPage(int $page, int $count): array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM posts LIMIT :limit OFFSET :offset');
-        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class, [$this->container]);
         $stmt->execute([
             'limit' => $count,
             'offset' => (($page-1)*$count)

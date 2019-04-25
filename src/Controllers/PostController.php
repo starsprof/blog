@@ -44,9 +44,20 @@ class PostController extends BaseController
         $posts = $this->postRepository->findPage($page, self::PER_PAGE_COUNT);
         return $this->view->render($response,'posts/adminIndex.twig', ['posts' => $posts, 'page' => $page, 'pages' => $pages, 'total' => $total]);
     }
+
+    public function adminView(Request $request, Response $response)
+    {
+        $id =(int) $request->getAttribute('id');
+        $post = $this->postRepository->findOneById($id);
+        if(empty($post))
+        {
+            throw new \Slim\Exception\NotFoundException($request, $response);
+        }
+        $category = $this->categoryRepository->findOneById($post->getCategoryId());
+        return $this->view->render($response, 'posts/adminView.twig', ['post' => $post, 'category' => $category]);
+    }
     public function index()
     {
-
     }
 
     public function add(Request $request, Response $response)

@@ -4,13 +4,15 @@
 namespace App\Models;
 
 
+use App\Models\Repositories\CategoryRepositoryInterface;
 use DateTime;
+use Psr\Container\ContainerInterface;
 
 /**
  * Class Post
  * @package App\Models
  */
-class Post
+class Post extends BaseModel
 {
     /**
      * @var int
@@ -67,12 +69,22 @@ class Post
         'updated_at',
         'created_at'
     ];
-    public function __construct()
+    /**
+     * @var CategoryRepositoryInterface
+     */
+    protected $categoryRepository;
+    public function __construct(ContainerInterface $container)
     {
+        parent::__construct($container);
         foreach($this->dates as $date)
         {
             $property = $this->{$date};
             $this->{$date} = new DateTime($property);
+        }
+        $this->categoryRepository = $this->container->get(CategoryRepositoryInterface::class);
+        if(!empty($this->category_id))
+        {
+            $this->category = $this->categoryRepository->findOneById($this->category_id);
         }
     }
 
@@ -252,14 +264,5 @@ class Post
     {
         return $this->category;
     }
-
-    /**
-     * @param Category $category
-     */
-    public function setCategory(Category $category): void
-    {
-        $this->category = $category;
-    }
-
 
 }

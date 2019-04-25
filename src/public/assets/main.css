@@ -14,3 +14,9 @@
     width: 128px;
     height: 128px;
 }
+body{
+    height: 100vh;
+}
+.footer {
+    background-color: #f5f5f5;
+}
