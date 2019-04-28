@@ -8,7 +8,8 @@
     "ext-pdo": "*",
     "tracy/tracy": "^2.6",
     "runcmf/runtracy": "^0.2.10",
-    "kanellov/slim-twig-flash": "^0.2.0"
+    "kanellov/slim-twig-flash": "^0.2.0",
+    "ext-intl": "*"
   },
   "autoload": {
     "psr-4": {

@@ -1,0 +1,57 @@
+{% extends 'template.twig' %}
+{% block head %}
+    <link rel="stylesheet" href="/assets/admin.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="/assets/tag.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between">
+        <h1>List tags</h1>
+        <div>
+            <span>Total: {{ total }}</span>
+            <button class="btn btn-info" onclick="showAddDialog()"><i class="fas fa-plus"></i> Add tag</button>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Slug</th>
+            <th>Posts count</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for tag in tags %}
+            <tr>
+                <td>{{ tag.getTitle }}</td>
+                <td>{{ tag.getSlug }}</td>
+                <td>0</td>
+                <td>
+                    <button class="btn btn-outline-warning btn-sm edit-tag-btn"
+                            onclick="showEditDialog({{ tag.getId }})">
+                        <i class="far fa-edit"></i> Edit
+                    </button>
+                    <form class="d-inline-block" action="/admin/tags/delete" method="POST"
+                        onsubmit="confirmTagDeleteSubmit(this, '{{ tag.getTitle }}'); return false;">
+                        <input type="hidden" name="_METHOD" value="DELETE"/>
+                        <input type="hidden" name="id" value="{{ tag.getId }}">
+                        <button class="btn btn-outline-danger btn-sm" type="submit"><i class="far fa-trash-alt"></i> Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <hr>
+    {% include 'partial/pagination.twig' with {'url' : '/admin/tags/'} %}
+    <!-- Modal -->
+    <div id="modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                {# content here #}
+            </div>
+        </div>
+    </div>
+{% endblock %}

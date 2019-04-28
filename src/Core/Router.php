@@ -10,6 +10,7 @@ use App\Controllers\Middleware\AuthMiddleware;
 use App\Controllers\Middleware\GuestMiddleware;
 use App\Controllers\PageController;
 use App\Controllers\PostController;
+use App\Controllers\TagController;
 use App\Controllers\UserController;
 use Slim\App;
 
@@ -54,6 +55,13 @@ class Router
                     $app->delete('/delete', PostController::class.':delete');
                     $app->map(['GET', 'POST'], '/add' ,PostController::class.':add');
                     $app->map(['GET', 'POST'], '/upload-image', PostController::class.':uploadImage');
+                });
+
+                $app->group('/tags', function () use ($app){
+                    $app->get('[/{page:[0-9]+}]', TagController::class.':adminIndex');
+                    $app->map(['GET', 'POST'], '/ajax-add' ,TagController::class.':add');
+                    $app->map(['GET','POST'],'/ajax-edit[/{id:[0-9]+}]', TagController::class.':edit');
+                    $app->delete('/delete', TagController::class.':delete');
                 });
             })->add(new AuthMiddleware($container));
 

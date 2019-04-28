@@ -131,7 +131,7 @@ class PostController extends BaseController
         $post->setCategoryId($params['inputCategoryId']);
         $post->setPublishedAt(\DateTime::createFromFormat('Y-m-d H:i',$params['inputPublishAt']));
         $post->setPublished($params['inputPublish']);
-
+        $errors = Post::validate($post);
         if($post->getSlug()!=$params['inputSlug'])
         {
             if(!$this->postRepository->checkSlugAvailability($params['inputSlug']))
@@ -189,7 +189,10 @@ class PostController extends BaseController
                 }
             }
         }catch (\Exception $exception) {
-            return $response->withJson(['uploaded' => false, 'error' => ['message' => 'could not upload this image']]);
+            return $response->withJson([
+                'uploaded' => false,
+                'error' => ['message' => 'could not upload this image']
+            ]);
         }
         return  $response->withJson(['uploaded' => false, 'error' => ['message' => 'bad image']]);
 

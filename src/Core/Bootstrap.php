@@ -9,6 +9,8 @@ use App\Models\Repositories\CategoryRepository;
 use App\Models\Repositories\CategoryRepositoryInterface;
 use App\Models\Repositories\PostRepository;
 use App\Models\Repositories\PostRepositoryInterface;
+use App\Models\Repositories\TagRepository;
+use App\Models\Repositories\TagRepositoryInterface;
 use App\Models\Repositories\UserRepository;
 use App\Models\Repositories\UserRepositoryInterface;
 use App\Models\User;
@@ -114,6 +116,9 @@ class Bootstrap
         };
         $this->container[PostRepositoryInterface::class] = function ($container){
             return new PostRepository($container);
+        };
+        $this->container[TagRepositoryInterface::class] = function ($container){
+            return new TagRepository($container);
         };
         $this->container[User::class] = function ($container) {
             return new User($container);
