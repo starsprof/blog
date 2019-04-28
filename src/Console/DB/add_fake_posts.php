@@ -38,8 +38,6 @@ for($i=1; $i<50; $i++) {
     $post->setDescription($faker->text(rand(300, 700)));
     $post->setImage($faker->imageUrl($width = 640, $height = 480));
     $post->setBody(getBody($faker));
-    $post->setCreatedAt($faker->dateTime);
-    $post->setUpdatedAt($faker->dateTime);
     $post->setPublishedAt($faker->dateTime);
     $post->setPublished($faker->boolean(90));
     $post->setCategoryId($categoryIds[array_rand($categoryIds)]);

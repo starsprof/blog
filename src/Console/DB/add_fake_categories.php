@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Repositories\CategoryRepositoryInterface;
-
+session_start();
 require_once __DIR__.'/../../../vendor/autoload.php';
 
 $path =  dirname(dirname(__DIR__));
