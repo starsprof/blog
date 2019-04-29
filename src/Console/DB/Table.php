@@ -4,6 +4,9 @@
 namespace App\Console\DB;
 
 
+use App\Models\Repositories\PostRepositoryInterface;
+use App\Models\Repositories\TagRepositoryInterface;
+use App\Models\Tag;
 use Exception;
 use PDO;
 use Psr\Container\ContainerInterface;
@@ -63,7 +66,7 @@ class Table
                 echo "\n Ошибка: " . $exception->getMessage() . "\n";
                 die();
             }
-            echo "Table $tableName created\n";
+            echo "Table `$tableName` created\n";
         }
 
     }
@@ -102,5 +105,41 @@ class Table
             }
             echo count($entities) . " `$name` inserted\n";
         }
+    }
+
+    public function addDependentEntities(
+        callable $callback,
+        string $name,
+        bool $interactive = true){
+
+        $response = '';
+        if ($interactive) {
+            do {
+                echo "\033[1;35mAdd fake `$name`? (y/n) - \033[0m";
+                $stdin = fopen('php://stdin', 'r');
+                $response = fgetc($stdin);
+            } while (!in_array($response, ['y', 'n']));
+        }
+        if ($response == 'y' || !$interactive) {
+            try {
+                $callback();
+            } catch (Exception $exception) {
+                echo "\n Ошибка: " . $exception->getMessage() . "\n";
+                die();
+            }
+        }
+    }
+
+    public function addPostTags(array $postsTags)
+    {
+        $this->pdo->beginTransaction();
+        foreach ($postsTags as $postTag)
+        {
+            $stmt = $this->pdo->prepare('INSERT INTO `posts_tags` (`post_id`, `tag_id`) 
+                                       VALUES (:post_id, :tag_id)');
+            $stmt->execute($postTag);
+        }
+        $this->pdo->commit();
+        echo count($postsTags) . " `posts_tags` inserted\n";
     }
 }

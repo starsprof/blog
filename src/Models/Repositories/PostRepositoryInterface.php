@@ -4,8 +4,8 @@
 namespace App\Models\Repositories;
 
 
-use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
 
 interface PostRepositoryInterface
 {
@@ -68,4 +68,5 @@ interface PostRepositoryInterface
      * @return array
      */
     public function getCategoriesKeysPairs(): array ;
+
 }

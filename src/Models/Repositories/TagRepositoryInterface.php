@@ -25,6 +25,13 @@ interface TagRepositoryInterface
      */
     public function findAll():array;
 
+
+    /**
+     * @param int[] $ids
+     * @return Tag[]
+     */
+    public function findManyByIds($ids = array()): array;
+
     /**
      * Find tags page
      * @param int $page
@@ -79,5 +86,12 @@ interface TagRepositoryInterface
      * @return array
      */
     public function getIdsTitlesPairs(): array ;
+
+    /**
+     * Get all tags dependent by post
+     * @param int $id
+     * @return Tag[]
+     */
+    public function findTagsByPostId(int $id): array;
 
 }

@@ -4,13 +4,16 @@
 namespace App\Models\Repositories;
 
 
-use App\Models\Category;
 use App\Models\Post;
 use PDO;
 use Psr\Container\ContainerInterface;
 
 class PostRepository extends BaseRepository implements PostRepositoryInterface
 {
+    /**
+     * PostRepository constructor.
+     * @param ContainerInterface $container
+     */
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);

@@ -30,7 +30,7 @@ use App\Models\Repositories\PostRepositoryInterface;
 use App\Models\Repositories\TagRepositoryInterface;
 use App\Models\Repositories\UserRepositoryInterface;
 
-require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 $bootstrap = new ConsoleBootstrap();
 $fakeEntityGenerator = new FakeEntityGenerator($bootstrap->container);
@@ -86,6 +86,15 @@ $table->addFakeEntity(
     'Tags',
     $fakeEntityGenerator->getTags(),
     TagRepositoryInterface::class,
+    $interactiveInsert
+);
+
+$table->createTable('posts_tags', $interactiveCreate);
+$table->addDependentEntities(
+    function () use ($table, $fakeEntityGenerator) {
+        $table->addPostTags($fakeEntityGenerator->getPostsTags());
+    },
+    'posts_tags',
     $interactiveInsert
 );
 

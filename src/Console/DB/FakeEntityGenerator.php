@@ -7,6 +7,8 @@ namespace App\Console\DB;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Repositories\CategoryRepositoryInterface;
+use App\Models\Repositories\PostRepositoryInterface;
+use App\Models\Repositories\TagRepositoryInterface;
 use App\Models\Tag;
 use App\Models\User;
 use Faker\Factory;
@@ -120,6 +122,38 @@ class FakeEntityGenerator
             $tags[] = $tag;
         }
         return $tags;
+    }
+
+    /*
+     * Get array ['post_id' => id, 'tag_id' => id]
+     */
+    public function getPostsTags(): array
+    {
+        /** @var PostRepositoryInterface $postRepository */
+        $postRepository = $this->container->get(PostRepositoryInterface::class);
+        /** @var TagRepositoryInterface $tagRepository */
+        $tagRepository = $this->container->get(TagRepositoryInterface::class);
+        $posts = $postRepository->findAll();
+        $tags = $tagRepository->findAll();
+        $tags = array_map(function ($tag) {
+            /** @var Tag $tag */
+            return $tag->getId();
+        }, $tags);
+        $postTags = [];
+        foreach ($posts as $post) {
+            $count = rand(0, 5);
+            if ($count > 0) {
+                $randomKeys =array_rand($tags, $count);
+                if(is_int($randomKeys)){
+                    $randomKeys = array($randomKeys);
+                }
+                $arr = array_map(function ($key) use ($tags, $post) {
+                    return ['post_id' => $post->getId(), 'tag_id' => $tags[$key]];
+                }, $randomKeys);
+                $postTags = array_merge($postTags, $arr);
+            }
+        }
+        return $postTags;
     }
 
     /**

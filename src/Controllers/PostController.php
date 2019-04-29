@@ -66,7 +66,10 @@ class PostController extends BaseController
         $categories = $this->postRepository->getCategoriesKeysPairs();
         if($request->isGet())
         {
-            return $this->view->render($response, 'posts/add.twig', ['categories' => $categories, 'validate' => false]);
+            return $this->view->render(
+                $response,
+                'posts/add.twig',
+                ['categories' => $categories, 'validate' => false]);
         }
         $params = $request->getParsedBody();
         $post = new Post($this->container);
@@ -77,11 +80,12 @@ class PostController extends BaseController
         $post->setCategoryId($params['inputCategoryId']);
         $post->setPublishedAt(\DateTime::createFromFormat('Y-m-d H:i',$params['inputPublishAt']));
         $post->setPublished($params['inputPublish']);
-        $errors = Post::validate($post);
+        $errors = [];
         if(! $this->postRepository->checkSlugAvailability($post->getSlug()))
         {
             $errors['slug'] = 'Slug already used';
         }
+        $errors = array_merge($errors, Post::validate($post));
         if(!empty($errors))
         {
             return $this->view->render($response, 'posts/add.twig', [
@@ -131,7 +135,7 @@ class PostController extends BaseController
         $post->setCategoryId($params['inputCategoryId']);
         $post->setPublishedAt(\DateTime::createFromFormat('Y-m-d H:i',$params['inputPublishAt']));
         $post->setPublished($params['inputPublish']);
-        $errors = Post::validate($post);
+        $errors = [];
         if($post->getSlug()!=$params['inputSlug'])
         {
             if(!$this->postRepository->checkSlugAvailability($params['inputSlug']))
@@ -140,7 +144,7 @@ class PostController extends BaseController
             }
             $post->setSlug($params['inputSlug']);
         }
-
+        $errors = array_merge($errors, Post::validate($post));
         if(!empty($errors))
         {
             $categories = $this->postRepository->getCategoriesKeysPairs();

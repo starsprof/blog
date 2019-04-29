@@ -158,5 +158,17 @@ class ConsoleBootstrap
             ) ENGINE = InnoDB
               AUTO_INCREMENT = 2
               DEFAULT CHARSET = UTF8;";
+
+        $this->container['posts_tags'] = "CREATE TABLE `posts_tags`
+            (
+                `post_id` int(11) NOT NULL,
+                `tag_id`  int(11) NOT NULL,
+                PRIMARY KEY (`post_id`, `tag_id`),
+                INDEX `post_id_index` (`post_id`),
+                INDEX `tag_id_index` (`tag_id`),
+                CONSTRAINT `posts_tags_posts_id_fk` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`),
+                CONSTRAINT `posts_tags_tags_id_fk` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`)
+            ) ENGINE = InnoDB
+              DEFAULT CHARSET = UTF8;";
     }
 }

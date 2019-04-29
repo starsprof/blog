@@ -49,16 +49,20 @@
                             <span><b>Updated: </b></span>
                             <span><b>Publish: </b></span>
                             <span><b>State: </b></span>
+                            <span><b>Tags: </b></span>
                         </div>
                         <div>
                             <span>{{ post.getCreatedAt|date("H:i m/d/y") }}</span>
                             <span>{{ post.getUpdatedAt|date("H:i m/d/y") }}</span>
                             <span>{{ post.getPublishedAt|date("H:i m/d/y") }}</span>
-                            <span>{% if post.isPublished %}
-                                <span class="badge badge-success">published</span>
-                            {% else %}
+                            <span>
+                                {% if post.isPublished %}
+                                    <span class="badge badge-success">published</span>
+                                {% else %}
                                     <span class="badge badge-danger">draft</span>
-                                {% endif %}</span>
+                                {% endif %}
+                            </span>
+                            <span>{{ post.getTags | length }}</span>
                         </div>
                     </div>
                 </div>

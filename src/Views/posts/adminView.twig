@@ -37,6 +37,14 @@
             </div>
         </div>
         <div class="row">
+            <div><h5>Tags: </h5></div>
+            <div>
+                {% for tag in post.getTags %}
+                    <span class="badge badge-info tag">{{ tag.getTitle }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="row">
             <div><h5>Description</h5></div>
             {{ post.getDescription | raw }}
         </div>

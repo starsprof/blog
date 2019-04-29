@@ -140,4 +140,35 @@ class TagRepository extends BaseRepository implements TagRepositoryInterface
         ]);
         return $stmt->fetchAll();
     }
+
+    /**
+     * @param int[] $ids
+     * @return Tag[]
+     */
+    public function findManyByIds($ids = array()): array
+    {
+        $in = str_repeat('?,', count($ids) - 1) . '?';
+        $sql = "SELECT * FROM tags WHERE id IN ($in)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Tag::class, [$this->container]);
+        $stmt->execute($ids);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Get all tags dependent by post
+     * @param int $id
+     * @return Tag[]
+     */
+    public function findTagsByPostId(int $id): array
+    {
+        $stmt = $this->pdo->prepare('SELECT tag_id FROM posts_tags WHERE post_id=:id');
+        $stmt->setFetchMode(PDO::FETCH_NUM);
+        $stmt->execute(['id' => $id]);
+        $tagsIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        if(empty($tagsIds)){
+            return [];
+        }
+        return $this->findManyByIds($tagsIds);
+    }
 }

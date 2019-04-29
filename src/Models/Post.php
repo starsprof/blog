@@ -5,6 +5,8 @@ namespace App\Models;
 
 
 use App\Models\Repositories\CategoryRepositoryInterface;
+use App\Models\Repositories\PostRepositoryInterface;
+use App\Models\Repositories\TagRepositoryInterface;
 use DateTime;
 use Psr\Container\ContainerInterface;
 use Respect\Validation\Exceptions\NestedValidationException;
@@ -18,7 +20,7 @@ use \Respect\Validation\Validator as v;
 class Post extends BaseModel
 {
     /**
-     * @var int
+     * @var int|null
      */
     protected $id;
     /**
@@ -67,6 +69,16 @@ class Post extends BaseModel
      */
     protected $category;
 
+    /**
+     * @var array
+     */
+    protected $tags_ids;
+
+    /**
+     * @var Tag[]
+     */
+    protected $tags;
+
     protected $dates = [
         'published_at',
         'updated_at',
@@ -76,6 +88,12 @@ class Post extends BaseModel
      * @var CategoryRepositoryInterface
      */
     protected $categoryRepository;
+
+    /**
+     * @var TagRepositoryInterface
+     */
+    protected $tagRepository;
+
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
@@ -89,12 +107,22 @@ class Post extends BaseModel
         {
             $this->category = $this->categoryRepository->findOneById($this->category_id);
         }
+        $this->tags = [];
+        $this->tagRepository = $this->container->get(TagRepositoryInterface::class);
+        if(!empty($this->getId())){
+           $this->tags = $this->tagRepository->findTagsByPostId($this->getId());
+           $this->tags_ids = array_map(function ($tag) {
+               /** @var Tag $tag */
+               return $tag->getId();
+           }, $this->tags);
+        }
+
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -251,6 +279,30 @@ class Post extends BaseModel
     public function getCategory(): Category
     {
         return $this->category;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTagsIds(): array
+    {
+        return $this->tags_ids;
+    }
+
+    /**
+     * @param array $tags_ids
+     */
+    public function setTagsIds(array $tags_ids): void
+    {
+        $this->tags_ids = $tags_ids;
+    }
+
+    /**
+     * @return Tag[]
+     */
+    public function getTags(): array
+    {
+        return $this->tags;
     }
 
     /**
