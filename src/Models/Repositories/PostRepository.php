@@ -115,6 +115,10 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
             'category_id' => $post->getCategoryId(),
             'id' => $post->getId()
         ]);
+        $this->unassignTagsForPost($post->getId());
+        if(!empty($post->getTagsIds())){
+            $this->assignTagsToPost($post->getId(), $post->getTagsIds());
+        }
         return (bool)$stmt->rowCount();
     }
 
@@ -183,5 +187,12 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
             ]);
         }
         $this->pdo->commit();
+    }
+
+    private function unassignTagsForPost($postId):void
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM `posts_tags` WHERE `post_id` = :post_id');
+        $stmt->execute(['post_id' => $postId]);
+
     }
 }

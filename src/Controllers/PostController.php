@@ -140,6 +140,7 @@ class PostController extends BaseController
     {
         $id = (int) $request->getAttribute('id');
         $post = $this->postRepository->findOneById($id);
+        $tags = $this->tagRepository->findAll();
         if(empty($post))
         {
             throw new \Slim\Exception\NotFoundException($request, $response);
@@ -148,6 +149,7 @@ class PostController extends BaseController
         return $this->view->render($response, 'posts/edit.twig', [
             'categories' => $categories,
             'post' => $post,
+            'tags' => $tags,
             'validate' => false
         ]);
     }
@@ -162,6 +164,12 @@ class PostController extends BaseController
         $post->setCategoryId($params['inputCategoryId']);
         $post->setPublishedAt(\DateTime::createFromFormat('Y-m-d H:i',$params['inputPublishAt']));
         $post->setPublished($params['inputPublish']);
+        if(!empty($params['inputTagsIds'])){
+            $post->setTagsIds($params['inputTagsIds']);
+        }else{
+            $post->setTagsIds([]);
+        }
+
         $errors = [];
         if($post->getSlug()!=$params['inputSlug'])
         {
@@ -175,10 +183,12 @@ class PostController extends BaseController
         if(!empty($errors))
         {
             $categories = $this->postRepository->getCategoriesKeysPairs();
+            $tags = $this->tagRepository->findAll();
             return $this->view->render($response, 'posts/edit.twig', [
                 'categories' => $categories,
                 'errors' => $errors,
                 'post' => $post,
+                'tags' => $tags,
                 'validate' => true
             ]);
         }

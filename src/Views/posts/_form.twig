@@ -42,7 +42,10 @@
                 aria-describedby="helpTags"
                 multiple>
             {% for tag in tags %}
-                <option value="{{ tag.getId }}">{{ tag.getTitle }}</option>
+                <option value="{{ tag.getId }}"
+                {{ tag.getId in post.getTagsIds ? 'selected' : '' }}>
+                    {{ tag.getTitle }}
+                </option>
             {% endfor %}
         </select>
         <small id="helpTags" class="form-text text-muted">Please select tags</small>

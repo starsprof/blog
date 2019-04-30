@@ -138,7 +138,7 @@ class ConsoleBootstrap
                 `created_at`   datetime     NOT NULL,
                 `updated_at`   datetime     NOT NULL,
                 `published_at` datetime     NOT NULL,
-                `published`    bool         NOT NULL,
+                `published`    tinyint      NOT NULL,
                 `category_id`  int(11)      NOT NULL,
                 `author_id`    int(11)      NULL,
                 PRIMARY KEY (`id`),
