@@ -91,4 +91,28 @@ class Tag extends BaseModel
         }
         return $errors;
     }
+
+    /**
+     * Get Random tags
+     * @param array $tags
+     * @param int $count
+     * @return array
+     */
+    public static function getRandomTags(array $tags, int $count): array
+    {
+        $allKeys = array_keys($tags);
+        $highKey = count($allKeys) - 1;
+        $keys = $elements = array();
+        $numElements = 0;
+        while ($numElements < $count) {
+            $num = mt_rand(0, $highKey);
+                if (isset($keys[$num])) {
+                    continue;
+                }
+                $keys[$num] = true;
+            $elements[] = $tags[$allKeys[$num]];
+            $numElements++;
+        }
+        return $elements;
+    }
 }

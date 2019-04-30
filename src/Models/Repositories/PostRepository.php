@@ -115,7 +115,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
             'category_id' => $post->getCategoryId(),
             'id' => $post->getId()
         ]);
-        $this->unassignTagsForPost($post->getId());
+        $this->unassumingTagsForPost($post->getId());
         if(!empty($post->getTagsIds())){
             $this->assignTagsToPost($post->getId(), $post->getTagsIds());
         }
@@ -189,10 +189,107 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
         $this->pdo->commit();
     }
 
-    private function unassignTagsForPost($postId):void
+    private function unassumingTagsForPost($postId):void
     {
         $stmt = $this->pdo->prepare('DELETE FROM `posts_tags` WHERE `post_id` = :post_id');
         $stmt->execute(['post_id' => $postId]);
 
+    }
+
+    /**
+     * Find last published posts
+     * @param int $count
+     * @param int $offset
+     * @return Post[]
+     */
+    public function findLastPublished(int $count, int $offset = 0): array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM posts WHERE `published` = 1 ORDER BY published_at DESC LIMIT :count OFFSET :offset');
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class, [$this->container]);
+        $stmt->execute(['count' => $count, 'offset' => $offset]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * @param int $count
+     * @return array
+     */
+    public function getRandomPublished(int $count): array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM posts WHERE `published` = 1 
+                                ORDER BY RAND() LIMIT :count');
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class, [$this->container]);
+        $stmt->execute(['count' => $count]);
+        return $stmt->fetchAll();
+    }
+
+
+    /**
+     * Find one Post by slug
+     * @param string $slug
+     * @return Post|null
+     */
+    public function findOneBySlug(string $slug): ?Post
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM posts WHERE slug=:slug LIMIT 1');
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class, [$this->container]);
+        $stmt->execute(['slug' => $slug]);
+        $post = $stmt->fetch();
+        return $post ? $post : null;
+    }
+
+    /**
+     * Find all published post by category Id
+     * @param int $categoryId
+     * @param int $count
+     * @param int $offset
+     * @return Post[]
+     */
+    public function findPublishedByCategoryId(int $categoryId, int $count, int $offset = 0): array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM posts WHERE 
+                                              `published` = 1 AND `category_id` = :category_id
+                                              ORDER BY published_at DESC LIMIT :count OFFSET :offset');
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class, [$this->container]);
+        $stmt->execute(['count' => $count, 'offset' => $offset, 'category_id' => $categoryId]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Find all published Post by tag Id
+     * @param int $tagId
+     * @param int $count
+     * @param int $offset
+     * @return array
+     */
+    public function findPublishedByTagId(int $tagId, int $count, int $offset = 0): array
+    {
+        $stmt = $this->pdo->prepare('SELECT post_id FROM posts_tags WHERE tag_id=:tag_id 
+                LIMIT :count OFFSET :offset');
+        $stmt->setFetchMode(PDO::FETCH_NUM);
+        $stmt->execute([
+            'tag_id' => $tagId,
+            'count' => $count,
+            'offset' => $offset
+        ]);
+        $postIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        return $this->findManyByIds($postIds, true);
+    }
+
+    /**
+     * Find posts by array ids
+     * @param array $ids
+     * @param bool $isPublishedOnly
+     * @return array
+     */
+    public function findManyByIds(array $ids = array(), bool $isPublishedOnly = false): array
+    {
+        $in = str_repeat('?,', count($ids) - 1) . '?';
+        $sql = "SELECT * FROM posts WHERE id IN ($in) AND `published` = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class, [$this->container]);
+        $ids[] = (int) $isPublishedOnly;
+        $stmt->execute($ids);
+        return $stmt->fetchAll();
     }
 }

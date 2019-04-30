@@ -18,7 +18,6 @@ This is a command line PHP script with one option.
     -t      create all tables
     -f      add all fake entities
 <?php
-    die();
 }
 
 

@@ -378,7 +378,7 @@ class Post extends BaseModel
                 $errors['slug'] = $exception->getFullMessage();
             }finally{
                 try{
-                    v::length(30)
+                    v::length(10, 60)
                         ->setName('Description')
                         ->assert(trim($post->getDescription()));
                 }catch (NestedValidationException $exception) {

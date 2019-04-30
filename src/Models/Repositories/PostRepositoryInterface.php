@@ -76,4 +76,50 @@ interface PostRepositoryInterface
      */
     public function assignTagsToPost(int $postId, array $tagsIds):void ;
 
+    /**
+     * Find last published posts
+     * @param int $count
+     * @param int $offset
+     * @return Post[]
+     */
+    public function findLastPublished(int $count, int $offset = 0): array ;
+
+    /**
+     * @param int $count
+     * @return array
+     */
+    public function getRandomPublished(int $count): array;
+
+    /**
+     * Find one Post by slug
+     * @param string $slug
+     * @return Post|null
+     */
+    public function findOneBySlug(string $slug): ?Post;
+
+    /**
+     * Find all published post by category Id
+     * @param int $categoryId
+     * @param int $count
+     * @param int $offset
+     * @return Post[]
+     */
+    public function findPublishedByCategoryId(int $categoryId, int $count, int $offset = 0): array ;
+
+    /**
+     * Find all published Post by tag Id
+     * @param int $tagId
+     * @param int $count
+     * @param int $offset
+     * @return array
+     */
+    public function findPublishedByTagId(int $tagId, int $count, int $offset = 0): array;
+
+    /**
+     * Find posts by array ids
+     * @param array $ids
+     * @param bool $isPublishedOnly
+     * @return array
+     */
+    public function findManyByIds(array $ids = array(), bool $isPublishedOnly = false): array;
 }

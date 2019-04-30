@@ -94,4 +94,11 @@ interface TagRepositoryInterface
      */
     public function findTagsByPostId(int $id): array;
 
+    /**
+     * Find tag by slug
+     * @param string $slug
+     * @return Tag|null
+     */
+    public function findBySlug(string $slug): ?Tag;
+
 }

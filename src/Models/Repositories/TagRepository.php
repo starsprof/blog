@@ -171,4 +171,18 @@ class TagRepository extends BaseRepository implements TagRepositoryInterface
         }
         return $this->findManyByIds($tagsIds);
     }
+
+    /**
+     * Find tag by slug
+     * @param string $slug
+     * @return Tag|null
+     */
+    public function findBySlug(string $slug): ?Tag
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM tags WHERE slug=:slug LIMIT 1');
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Tag::class, [$this->container]);
+        $stmt->execute(['slug' => $slug]);
+        $tag = $stmt->fetch();
+        return $tag ? $tag : null;
+    }
 }

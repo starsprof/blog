@@ -52,8 +52,9 @@ class FakeEntityGenerator
         for ($i = 0; $i < $count; $i++) {
             $user = new User($this->container);
             $user->setEmail($this->faker->unique()->email);
-            $user->setName($this->faker->name);
+            $user->setName($this->faker->firstName . ' ' . $this->faker->lastName);
             $user->setPassword(password_hash('123123', PASSWORD_DEFAULT));
+            $user->setAvatar($this->faker->imageUrl(480, 480, 'people', true));
             $users[] = $user;
         }
         return $users;
@@ -108,8 +109,8 @@ class FakeEntityGenerator
             $post = new Post($this->container);
             $post->setTitle($this->faker->sentence);
             $post->setSlug($this->faker->unique()->slug);
-            $post->setDescription($this->faker->text(rand(300, 700)));
-            $post->setImage($this->faker->imageUrl($width = 640, $height = 480));
+            $post->setDescription($this->faker->text(rand(20, 60)));
+            $post->setImage($this->faker->imageUrl($width = 640, $height = 480, null, true));
             $post->setBody($this->getPostBody());
             $post->setPublishedAt($this->faker->dateTime);
             $post->setPublished($this->faker->boolean(90));
@@ -129,6 +130,7 @@ class FakeEntityGenerator
     {
         $tags = [];
         $tagsTitles = ['Advertising', 'Advice', 'Android', 'Anime', 'Apple', 'Architecture', 'Art', 'Baking', 'Beauty', 'Bible', 'Blog', 'Blogging', 'Book Reviews', 'Books', 'Business', 'Canada', 'Cars', 'Cartoons', 'Celebrities', 'Celebrity', 'Children', 'Christian', 'Christianity', 'Comedy', 'Comics', 'Cooking', 'Cosmetics', 'Crafts', 'Cuisine', 'Culinary', 'Culture', 'Dating', 'Design', 'Diy', 'Dogs', 'Drawing', 'Economy', 'Education', 'Entertainment', 'Environment', 'Events', 'Exercise', 'Faith', 'Family', 'Fantasy', 'Fashion', 'Fiction', 'Film', 'Fitness', 'Folk', 'Food', 'Football', 'France', 'Fun', 'Funny', 'Gadgets', 'Games', 'Gaming', 'Geek', 'Google', 'Gossip', 'Graphic Design', 'Green', 'Health', 'Hip', 'History', 'Home', 'Home Improvement', 'Homes', 'Humor', 'Humour', 'Hunting', 'Illustration', 'Indie', 'Inspiration', 'Interior Design', 'Internet', 'Internet Marketing', 'Iphone', 'Italy', 'Kids', 'Landscape', 'Law', 'Leadership', 'Life', 'Lifestyle', 'Literature', 'London', 'Love', 'Management', 'Marketing', 'Media', 'Men', 'Mobile', 'Money', 'Movies', 'Music', 'Nature', 'News', 'Nutrition', 'Opinion', 'Painting', 'Parenting', 'Personal', 'Personal Development', 'Pets', 'Philosophy', 'Photo', 'Photography', 'Photos', 'Pictures', 'Poetry', 'Politics', 'Real Estate', 'Recipes', 'Relationships', 'Religion', 'Retirement', 'Reviews', 'Sales', 'Satire', 'Science', 'Seo', 'Sex', 'Shopping', 'Soccer', 'Social Media', 'Software', 'Spirituality', 'Sports', 'Technology', 'Television', 'Tips', 'Travel', 'Tutorials', 'Tv', 'Uk', 'Vacation', 'Video', 'Videos', 'Voices.com', 'Web', 'Web Design', 'Weight Loss', 'Wellness', 'Wildlife', 'Wine', 'Women', 'Wordpress', 'Writing'];
+        $tagsTitles = $this->faker->randomElements($tagsTitles, rand(20,50));
         foreach ($tagsTitles as $title) {
             $tag = new Tag($this->container);
             $tag->setTitle(trim($title));

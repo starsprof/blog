@@ -38,6 +38,8 @@ class Router
         $app->map(['GET', 'POST'], '/profile', UserController::class.':profile')
             ->add(new AuthMiddleware($container));
 
+
+
         $app->group('/admin', function () use ($app) {
                 $app->group('/categories', function () use ($app){
                     $app->get('[/{page:[0-9]+}]', CategoryController::class.':index');
@@ -64,6 +66,12 @@ class Router
                     $app->delete('/delete', TagController::class.':delete');
                 });
             })->add(new AuthMiddleware($container));
+
+        $app->get('/category/{id:[0-9]+}', PageController::class.':category');
+        $app->get('/tag/{slug}', PageController::class.':tag');
+        $app->get('/{slug}', PageController::class.':read');
+
+
 
     }
 }
