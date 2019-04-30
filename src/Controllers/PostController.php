@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Models\Post;
 use App\Models\Repositories\CategoryRepositoryInterface;
 use App\Models\Repositories\PostRepositoryInterface;
+use App\Models\Repositories\TagRepositoryInterface;
 use Psr\Container\ContainerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -27,11 +28,17 @@ class PostController extends BaseController
     /** @var int  */
     private const PER_PAGE_COUNT = 5;
 
+    /**
+     * @var TagRepositoryInterface
+     */
+    private $tagRepository;
+
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
         $this->postRepository = $this->container->get(PostRepositoryInterface::class);
         $this->categoryRepository = $this->container->get(CategoryRepositoryInterface::class);
+        $this->tagRepository = $this->container->get(TagRepositoryInterface::class);
     }
 
     public function index(Request $request, Response $response)
@@ -58,18 +65,31 @@ class PostController extends BaseController
         return $this->view->render($response, 'posts/view.twig', ['post' => $post]);
     }
 
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @throws \Exception
+     */
     public function add(Request $request, Response $response)
     {
         $categories = $this->postRepository->getCategoriesKeysPairs();
+        $tags = $this->tagRepository->findAll();
         if($request->isGet())
         {
             return $this->view->render(
                 $response,
                 'posts/add.twig',
-                ['categories' => $categories, 'validate' => false]);
+                ['categories' => $categories, 'tags' => $tags, 'validate' => false]);
         }
+
+
         $params = $request->getParsedBody();
         $post = new Post($this->container);
+        if(!empty($params['inputTagsIds'])){
+            $post->setTagsIds($params['inputTagsIds']);
+        }
+
         $post->setSlug($params['inputSlug']);
         $post->setTitle($params['inputTitle']);
         $post->setDescription($params['inputDescription']);
@@ -89,6 +109,7 @@ class PostController extends BaseController
                 'categories' => $categories,
                 'errors' => $errors,
                 'post' => $post,
+                'tags' => $tags,
                 'validate' => true
             ]);
 
@@ -107,6 +128,14 @@ class PostController extends BaseController
         $this->flash->addMessage(self::MESSAGE_INFO, 'Post added');
         return $response->withRedirect('/admin/posts/view/'.$newPost->getId());
     }
+
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Slim\Exception\NotFoundException
+     */
     public function getEdit(Request $request, Response $response)
     {
         $id = (int) $request->getAttribute('id');

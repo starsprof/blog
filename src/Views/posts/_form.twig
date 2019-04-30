@@ -30,6 +30,30 @@
             {{ errors.category }}
         </div>
     </div>
+
+
+
+    <div class="form-group">
+        <label for="inputTagsIds">Tags: </label>
+        <select
+                class="form-control {{ validate ? (errors.tags is defined ? 'is-invalid' : 'is-valid') : '' }}"
+                name="inputTagsIds[]"
+                id="inputTagsIds"
+                aria-describedby="helpTags"
+                multiple>
+            {% for tag in tags %}
+                <option value="{{ tag.getId }}">{{ tag.getTitle }}</option>
+            {% endfor %}
+        </select>
+        <small id="helpTags" class="form-text text-muted">Please select tags</small>
+        <div class="invalid-feedback ">
+            {{ errors.tags }}
+        </div>
+    </div>
+
+
+
+
     <div class="form-group">
         <label for="inputImage">Image:</label>
         <div class="custom-file">
