@@ -7,7 +7,7 @@
         <div class="container">
             <div class="row mb-4">
                 <div class="col-md-6">
-                    {% if category is defined %}#}
+                    {% if category is defined %}
                         <h2 class="mb-4">Category: {{ category.getName }}</h2>
                         <p>{{ category.getDescription }}</p>
                     {% elseif tag is defined %}
@@ -32,9 +32,8 @@
                                             <span class="author mr-2">
                                                 <img src="{{ post.getAuthor.getAvatar }}" alt="{{ post.getAuthor.getName }}">
                                                 {{ post.getAuthor.getName }}
-                                            </span>&bullet;
-                                            <span class="mr-2">{{ post.getPublishedAt | date("M d, Y") }} </span> &bullet;
-                                            <span class="ml-2"><span class="fa fa-comments"></span> 3</span>
+                                            </span> &bullet;
+                                            <span class="mr-2">{{ post.getPublishedAt | date("M d, Y") }} </span>
                                         </div>
                                         <h2>{{ post.getTitle }}</h2>
                                     </span>
