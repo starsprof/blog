@@ -105,6 +105,7 @@ class PostController extends BaseController
                 $post->setImage('/' . getenv('UPLOAD_DIR') . '/' . $filename);
             }
         }
+        $post->setAuthorId($this->auth->user()->getId());
         $newPost = $this->postRepository->create($post);
         $this->flash->addMessage(self::MESSAGE_INFO, 'Post added');
         return $response->withRedirect('/admin/posts/view/'.$newPost->getId());

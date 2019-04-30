@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Models\Repositories\CategoryRepositoryInterface;
 use App\Models\Repositories\PostRepositoryInterface;
 use App\Models\Repositories\TagRepositoryInterface;
+use App\Models\Repositories\UserRepositoryInterface;
 use DateTime;
 use Psr\Container\ContainerInterface;
 use Respect\Validation\Exceptions\NestedValidationException;
@@ -79,6 +80,16 @@ class Post extends BaseModel
      */
     protected $tags;
 
+    /**
+     * @var int|null
+     */
+    protected $author_id;
+
+    /**
+     * @var User
+     */
+    protected $author;
+
     protected $dates = [
         'published_at',
         'updated_at',
@@ -93,6 +104,10 @@ class Post extends BaseModel
      * @var TagRepositoryInterface
      */
     protected $tagRepository;
+    /**
+     * @var UserRepositoryInterface
+     */
+    protected $userRepository;
 
     public function __construct(ContainerInterface $container)
     {
@@ -103,20 +118,28 @@ class Post extends BaseModel
             $this->{$date} = new DateTime($property);
         }
         $this->categoryRepository = $this->container->get(CategoryRepositoryInterface::class);
+        $this->tagRepository = $this->container->get(TagRepositoryInterface::class);
+        $this->userRepository = $this->container->get(UserRepositoryInterface::class);
+
         if(!empty($this->category_id))
         {
             $this->category = $this->categoryRepository->findOneById($this->category_id);
         }
+
         $this->tags = [];
-        $this->tagRepository = $this->container->get(TagRepositoryInterface::class);
-        if(!empty($this->getId())){
-           $this->tags = $this->tagRepository->findTagsByPostId($this->getId());
-           $this->tags_ids = array_map(function ($tag) {
-               /** @var Tag $tag */
-               return $tag->getId();
-           }, $this->tags);
+        $this->tags_ids = [];
+        if (!empty($this->getId())) {
+            $this->tags = $this->tagRepository->findTagsByPostId($this->getId());
+            $this->tags_ids = array_map(function ($tag) {
+                /** @var Tag $tag */
+                return $tag->getId();
+            }, $this->tags);
         }
 
+        if(!empty($this->author_id))
+        {
+            $this->author = $this->userRepository->findOneById($this->author_id);
+        }
     }
 
     /**
@@ -304,6 +327,33 @@ class Post extends BaseModel
     {
         return $this->tags;
     }
+
+    /**
+     * @return int|null
+     */
+    public function getAuthorId(): ?int
+    {
+        return $this->author_id;
+    }
+
+    /**
+     * @param int|null $author_id
+     */
+    public function setAuthorId(?int $author_id): void
+    {
+        $this->author_id = $author_id;
+    }
+
+
+    /**
+     * @return User
+     */
+    public function getAuthor(): User
+    {
+        return $this->author;
+    }
+
+
 
     /**
      * Validate Post properties

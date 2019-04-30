@@ -29,6 +29,10 @@
                         <span class="mr-1"><b>Category:</b> </span>
                         <span> {{ post.getCategory.getName }} </span>
                     </div>
+                    <div class="row d-flex justify-content-start flex-nowrap">
+                        <span class="mr-1"><b>Author:</b> </span>
+                        <span> {{ post.getAuthor.getName }} </span>
+                    </div>
                     <br>
                     <div>
                         <a href="/admin/posts/view/{{ post.getId }}" class="btn btn-outline-primary btn-sm">

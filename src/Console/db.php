@@ -73,14 +73,6 @@ $table->addFakeEntity(
     $interactiveInsert
 );
 
-$table->createTable('posts', $interactiveCreate);
-$table->addFakeEntity(
-    'Posts',
-    $fakeEntityGenerator->getPosts(100),
-    PostRepositoryInterface::class,
-    $interactiveInsert
-);
-
 $table->createTable('tags', $interactiveCreate);
 $table->addFakeEntity(
     'Tags',
@@ -90,11 +82,13 @@ $table->addFakeEntity(
 );
 
 $table->createTable('posts_tags', $interactiveCreate);
-$table->addDependentEntities(
-    function () use ($table, $fakeEntityGenerator) {
-        $table->addPostTags($fakeEntityGenerator->getPostsTags());
-    },
-    'posts_tags',
+
+
+$table->createTable('posts', $interactiveCreate);
+$table->addFakeEntity(
+    'Posts',
+    $fakeEntityGenerator->getPosts(100),
+    PostRepositoryInterface::class,
     $interactiveInsert
 );
 

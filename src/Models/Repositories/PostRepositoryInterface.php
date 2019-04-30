@@ -69,4 +69,11 @@ interface PostRepositoryInterface
      */
     public function getCategoriesKeysPairs(): array ;
 
+    /**
+     * Assign tags to array (many to many)
+     * @param int $postId
+     * @param array $tagsIds
+     */
+    public function assignTagsToPost(int $postId, array $tagsIds):void ;
+
 }

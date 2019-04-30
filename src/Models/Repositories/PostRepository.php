@@ -65,11 +65,10 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
      */
     public function create(Post $post): Post
     {
-//
         $stmt = $this->pdo->prepare('INSERT INTO posts (`title`, `slug`, `image`, `description`, `body`, `created_at`,
-                   `updated_at`, `published_at`, `published`, `category_id`) VALUES (
+                   `updated_at`, `published_at`, `published`, `category_id`, `author_id`) VALUES (
                      :title, :slug, :image, :description, :body, :created_at,
-                   :updated_at, :published_at, :published, :category_id)');
+                   :updated_at, :published_at, :published, :category_id, :author_id)');
         $stmt->execute([
             'title' => $post->getTitle(),
             'slug' => $post->getSlug(),
@@ -79,10 +78,15 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
             'published_at' => $post->getPublishedAt()->format("Y-m-d H:i:s"),
-            'published' => (int) $post->isPublished(),
-            'category_id' => $post->getCategoryId()
+            'published' => (int)$post->isPublished(),
+            'category_id' => $post->getCategoryId(),
+            'author_id' => $post->getAuthorId()
         ]);
+        $tagsIds = $post->getTagsIds();
         $id = (integer)$this->pdo->lastInsertId();
+        if (!empty($tagsIds)) {
+            $this->assignTagsToPost($id, $tagsIds);
+        }
         $post = $this->findOneById($id);
         return $post;
     }
@@ -159,5 +163,25 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
     {
         $stmt = $this->pdo->query('SELECT `id`, `name` FROM categories');
         return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+    }
+
+    /**
+     * Assign tags to array (many to many)
+     * @param int $postId
+     * @param array $tagsIds
+     */
+    public function assignTagsToPost(int $postId, array $tagsIds): void
+    {
+        $this->pdo->beginTransaction();
+        foreach ($tagsIds as $tagId)
+        {
+            $stmt = $this->pdo->prepare('INSERT INTO `posts_tags` (`post_id`, `tag_id`) 
+                                       VALUES (:post_id, :tag_id)');
+            $stmt->execute([
+                'post_id' => $postId,
+                'tag_id' => $tagId
+            ]);
+        }
+        $this->pdo->commit();
     }
 }

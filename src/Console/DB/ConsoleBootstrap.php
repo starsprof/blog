@@ -140,10 +140,13 @@ class ConsoleBootstrap
                 `published_at` datetime     NOT NULL,
                 `published`    bool         NOT NULL,
                 `category_id`  int(11)      NOT NULL,
+                `author_id`    int(11)      NULL,
                 PRIMARY KEY (`id`),
                 UNIQUE KEY `posts_slug_uindex` (`slug`),
                 KEY `posts_categories_id_fk` (`category_id`),
-                CONSTRAINT `posts_categories_id_fk` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE
+                KEY `posts_users_id_fk` (`author_id`),
+                CONSTRAINT `posts_categories_id_fk` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE,
+                CONSTRAINT `posts_users_id_fk` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE set null 
             ) ENGINE = InnoDB
               DEFAULT CHARSET = UTF8;";
 
@@ -166,8 +169,8 @@ class ConsoleBootstrap
                 PRIMARY KEY (`post_id`, `tag_id`),
                 INDEX `post_id_index` (`post_id`),
                 INDEX `tag_id_index` (`tag_id`),
-                CONSTRAINT `posts_tags_posts_id_fk` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`),
-                CONSTRAINT `posts_tags_tags_id_fk` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`)
+                CONSTRAINT `posts_tags_posts_id_fk` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
+                CONSTRAINT `posts_tags_tags_id_fk` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`) ON DELETE CASCADE 
             ) ENGINE = InnoDB
               DEFAULT CHARSET = UTF8;";
     }

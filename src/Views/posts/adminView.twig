@@ -28,6 +28,7 @@
         <div class="row justify-content-between">
              <div class="d-flex justify-content-start flex-column">
                 <span class="d-block mt-2"><b>Category: </b>{{ post.getCategory.getName }}</span>
+                <span class="d-block mt-2"><b>Author: </b>{{ post.getAuthor.getName }}</span>
                 <span class="d-block mt-2"><b>Created: </b>{{ post.getCreatedAt|date("H:i m/d/y") }}</span>
                 <span class="d-block mt-2"><b>Updated: </b>{{ post.getUpdatedAt|date("H:i m/d/y") }}</span>
                 <span class="d-block mt-2"><b>Publish: </b>{{ post.getPublishedAt|date("H:i m/d/y") }}</span>
