@@ -40,16 +40,16 @@ class Router
 
         $app->group('/admin', function () use ($app) {
                 $app->group('/categories', function () use ($app){
-                    $app->get('[/{page:[0-9]+}]', CategoryController::class.':adminIndex');
-                    $app->delete('/delete', CategoryController::class.':adminRemove');
-                    $app->map(['GET', 'POST'], '/add', CategoryController::class.':adminAdd');
+                    $app->get('[/{page:[0-9]+}]', CategoryController::class.':index');
+                    $app->delete('/delete', CategoryController::class.':remove');
+                    $app->map(['GET', 'POST'], '/add', CategoryController::class.':add');
                     $app->get('/edit/{id:[0-9]+}', CategoryController::class.':getEdit');
                     $app->post('/edit', CategoryController::class.':postEdit');
                 });
 
                 $app->group('/posts', function () use ($app){
-                    $app->get('[/{page:[0-9]+}]', PostController::class.':adminIndex');
-                    $app->get('/view/{id:[0-9]+}', PostController::class.':adminView');
+                    $app->get('[/{page:[0-9]+}]', PostController::class.':index');
+                    $app->get('/view/{id:[0-9]+}', PostController::class.':view');
                     $app->get( '/edit/{id:[0-9]+}' ,PostController::class.':getEdit');
                     $app->post( '/edit' ,PostController::class.':postEdit');
                     $app->delete('/delete', PostController::class.':delete');
@@ -58,7 +58,7 @@ class Router
                 });
 
                 $app->group('/tags', function () use ($app){
-                    $app->get('[/{page:[0-9]+}]', TagController::class.':adminIndex');
+                    $app->get('[/{page:[0-9]+}]', TagController::class.':index');
                     $app->map(['GET', 'POST'], '/ajax-add' ,TagController::class.':add');
                     $app->map(['GET','POST'],'/ajax-edit[/{id:[0-9]+}]', TagController::class.':edit');
                     $app->delete('/delete', TagController::class.':delete');

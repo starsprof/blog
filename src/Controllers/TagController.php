@@ -23,7 +23,7 @@ final class TagController extends BaseController
 
     }
 
-    public function adminIndex(Request $request, Response $response)
+    public function index(Request $request, Response $response)
     {
         $page = $request->getAttribute('page');
         if (empty($page)) {
@@ -34,7 +34,7 @@ final class TagController extends BaseController
         $tags = $this->tagRepository->findPage($page, self::PER_PAGE_COUNT);
         return $this->view->render(
             $response,
-            'tags/adminIndex.twig',
+            'tags/index.twig',
             ['tags' => $tags, 'page' => $page, 'pages' => $pages, 'total' => $total]
         );
     }

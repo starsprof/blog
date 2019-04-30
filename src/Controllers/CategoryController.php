@@ -33,7 +33,7 @@ class CategoryController extends BaseController
         $this->categoryRepository = $this->container->get(CategoryRepositoryInterface::class);
     }
 
-    public function adminIndex(Request $request, Response $response)
+    public function index(Request $request, Response $response)
     {
         $page = (int) $request->getAttribute('page');
         $page = $page ? $page : 1;
@@ -52,7 +52,7 @@ class CategoryController extends BaseController
                 'total' => $allCount]);
     }
 
-    public function adminRemove(Request $request, Response $response)
+    public function remove(Request $request, Response $response)
     {
         $id = (int) $request->getParsedBody()['id'];
         $this->categoryRepository->deleteOneById($id);
@@ -60,7 +60,7 @@ class CategoryController extends BaseController
         return $response->withRedirect('/admin/categories');
     }
 
-    public function adminAdd(Request $request, Response $response)
+    public function add(Request $request, Response $response)
     {
         if($request->isGet())
         {

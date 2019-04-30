@@ -34,7 +34,7 @@ class PostController extends BaseController
         $this->categoryRepository = $this->container->get(CategoryRepositoryInterface::class);
     }
 
-    public function adminIndex(Request $request, Response $response)
+    public function index(Request $request, Response $response)
     {
         $page = $request->getAttribute('page');
         if(empty($page))
@@ -44,10 +44,10 @@ class PostController extends BaseController
         $total = $this->postRepository->count();
         $pages = ceil($total/self::PER_PAGE_COUNT);
         $posts = $this->postRepository->findPage($page, self::PER_PAGE_COUNT);
-        return $this->view->render($response,'posts/adminIndex.twig', ['posts' => $posts, 'page' => $page, 'pages' => $pages, 'total' => $total]);
+        return $this->view->render($response,'posts/index.twig', ['posts' => $posts, 'page' => $page, 'pages' => $pages, 'total' => $total]);
     }
 
-    public function adminView(Request $request, Response $response)
+    public function view(Request $request, Response $response)
     {
         $id = (int) $request->getAttribute('id');
         $post = $this->postRepository->findOneById($id);
@@ -55,10 +55,7 @@ class PostController extends BaseController
         {
             throw new \Slim\Exception\NotFoundException($request, $response);
         }
-        return $this->view->render($response, 'posts/adminView.twig', ['post' => $post]);
-    }
-    public function index()
-    {
+        return $this->view->render($response, 'posts/view.twig', ['post' => $post]);
     }
 
     public function add(Request $request, Response $response)
