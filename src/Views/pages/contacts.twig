@@ -1,0 +1,22 @@
+{% extends 'front-template.twig' %}
+
+{% block title %}Latest Posts{% endblock %}
+
+{% block content %}
+    {% if sent %}
+    <h1>Message send! Thanks!</h1>
+    {% endif %}
+    <h1>Contact form</h1>
+    <form method="post" action="/contacts">
+        <label for="email">Email</label>
+        <input type="text" name="email" id="email">
+        <br>
+        <label for="subject">Subject</label>
+        <input type="text" name="subject" id="subject">
+        <br>
+        <label for="body">Text</label>
+        <textarea name="body" id="body" rows="5"></textarea>
+        <br>
+        <input type="submit" value="Send">
+    </form>
+{% endblock %}

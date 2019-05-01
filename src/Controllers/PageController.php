@@ -7,6 +7,8 @@ use App\Models\Repositories\CategoryRepositoryInterface;
 use App\Models\Repositories\PostRepositoryInterface;
 use App\Models\Repositories\TagRepositoryInterface;
 use App\Models\Tag;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Psr\Container\ContainerInterface;
 use Slim\Exception\NotFoundException;
 use Slim\Http\Request;
@@ -135,5 +137,21 @@ class PageController extends BaseController
         ];
     }
 
+    public function contacts(Request $request, Response $response)
+    {
+        if($request->isGet()){
+            return $this->view->render($response,'pages/contacts.twig', ['sent' => false]);
+        }
+        $params = $request->getParsedBody();
+        $email = $params['email'];
+        $subject = $params['subject'];
+        $body = $params['body'];
+
+        $log = new Logger('name');
+        $log->pushHandler(new StreamHandler(getenv('ROOT').'/messages.log', Logger::INFO));
+        $log->info("Email: $email, Subject: $subject Text: $body");
+        return $this->view->render($response,'pages/contacts.twig', ['sent' => true]);
+
+    }
 
 }

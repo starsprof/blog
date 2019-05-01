@@ -9,7 +9,7 @@
     "tracy/tracy": "^2.6",
     "runcmf/runtracy": "^0.2.10",
     "kanellov/slim-twig-flash": "^0.2.0",
-    "ext-intl": "*"
+    "monolog/monolog": "^1.24"
   },
   "autoload": {
     "psr-4": {

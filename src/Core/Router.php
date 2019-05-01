@@ -67,6 +67,7 @@ class Router
                 });
             })->add(new AuthMiddleware($container));
 
+        $app->map(['GET', 'POST'], '/contacts', PageController::class.':contacts');
         $app->get('/category/{id:[0-9]+}', PageController::class.':category');
         $app->get('/tag/{slug}', PageController::class.':tag');
         $app->get('/{slug}', PageController::class.':read');
