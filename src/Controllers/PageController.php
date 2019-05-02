@@ -140,16 +140,20 @@ class PageController extends BaseController
     public function contacts(Request $request, Response $response)
     {
         if($request->isGet()){
-            return $this->view->render($response,'pages/contacts.twig', ['sent' => false]);
+            return $this->view->render(
+                $response,
+                'pages/contacts.twig',
+                array_merge(['sent' => false], $this->getSidebarViewModel()));
         }
         $params = $request->getParsedBody();
+        $name = $params['name'];
+        $phone = $params['phone'];
         $email = $params['email'];
-        $subject = $params['subject'];
-        $body = $params['body'];
+        $message = $params['message'];
 
         $log = new Logger('name');
-        $log->pushHandler(new StreamHandler(getenv('ROOT').'/messages.log', Logger::INFO));
-        $log->info("Email: $email, Subject: $subject Text: $body");
+        $log->pushHandler(new StreamHandler(getenv('ROOT').'/../logs/messages.log', Logger::INFO));
+        $log->info("Name: $name, Email: $email, Phone: $phone, Message: $message");
         return $this->view->render($response,'pages/contacts.twig', ['sent' => true]);
 
     }
