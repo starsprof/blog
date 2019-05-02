@@ -154,7 +154,10 @@ class PageController extends BaseController
         $log = new Logger('name');
         $log->pushHandler(new StreamHandler(getenv('ROOT').'/../logs/messages.log', Logger::INFO));
         $log->info("Name: $name, Email: $email, Phone: $phone, Message: $message");
-        return $this->view->render($response,'pages/contacts.twig', ['sent' => true]);
+        return $this->view->render(
+            $response,
+            'pages/contacts.twig',
+            array_merge(['sent' => false], $this->getSidebarViewModel()));
 
     }
 
