@@ -157,7 +157,7 @@ class PageController extends BaseController
         return $this->view->render(
             $response,
             'pages/contacts.twig',
-            array_merge(['sent' => false], $this->getSidebarViewModel()));
+            array_merge(['sent' => true], $this->getSidebarViewModel()));
 
     }
 
