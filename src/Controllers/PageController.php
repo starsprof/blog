@@ -46,8 +46,6 @@ class PageController extends BaseController
      */
     public function home(Request $request, Response $response)
     {
-
-
         $posts = $this->postRepository->findLastPublished(8);
         $sliderPosts = $this->postRepository->getRandomPublished(3);
         return $this->view->render(
@@ -125,11 +123,33 @@ class PageController extends BaseController
 
     private function getSidebarViewModel()
     {
-        $categories = $this->categoryRepository->findAll();
-        //TODO: change used only
-        $tags = $this->tagRepository->findAll();
+
+        $categories = [];
+        if($this->cache->has('categories')) {
+            $categories = $this->cache->get('categories');
+        }else{
+            $categories = $this->categoryRepository->findAll();
+            $this->cache->set('categories', $categories);
+        }
+
+
+        $tags =[];
+        if($this->cache->has('tags')){
+            $tags = $this->cache->get('tags');
+        }else {
+            $tags = $this->tagRepository->findAll();
+            $this->cache->set('tags', $tags);
+        }
         $tags = Tag::getRandomTags($tags, 10);
-        $randomPosts = $this->postRepository->getRandomPublished(3);
+
+        $randomPosts = [];
+        if($this->cache->has('randomTags')){
+            $randomPosts = $this->cache->get('randomTags');
+        }else {
+            $randomPosts = $this->postRepository->getRandomPublished(3);
+            $this->cache->set('randomTags', $randomPosts, 50000);
+        }
+
         return [
             'categories' => $categories,
             'randomPosts' => $randomPosts,
@@ -152,7 +172,7 @@ class PageController extends BaseController
         $message = $params['message'];
 
         $log = new Logger('name');
-        $log->pushHandler(new StreamHandler(getenv('ROOT').'/../logs/messages.log', Logger::INFO));
+        $log->pushHandler(new StreamHandler(getenv('ROOT').'/../storage/logs/messages.log', Logger::INFO));
         $log->info("Name: $name, Email: $email, Phone: $phone, Message: $message");
         return $this->view->render(
             $response,

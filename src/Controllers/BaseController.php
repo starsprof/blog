@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Models\Auth;
 use Psr\Container\ContainerInterface;
+use Psr\SimpleCache\CacheInterface;
 use Slim\Flash\Messages;
 use Slim\Http\UploadedFile;
 use \Slim\Views\Twig;
@@ -34,6 +35,11 @@ class BaseController
     protected $flash;
 
     /**
+     * @var CacheInterface
+     */
+    protected $cache;
+
+    /**
      * BaseController constructor.
      * @param ContainerInterface $container
      */
@@ -42,6 +48,8 @@ class BaseController
         $this->view = $this->container->get('view');
         $this->auth = $this->container->get(Auth::class);
         $this->flash = $this->container->get('flash');
+        $this->cache = $this->container->get('cache');
+
     }
     /**
      * Moves the uploaded file to the upload directory and assigns it a unique name

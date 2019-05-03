@@ -18,6 +18,9 @@ use Dotenv\Dotenv;
 use Slim\App;
 use Slim\Container;
 use Tracy\Debugger;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
+use Cache\Adapter\Filesystem\FilesystemCachePool;
 
 
 class Bootstrap
@@ -139,6 +142,12 @@ class Bootstrap
             ));
             $view->getEnvironment()->addGlobal('auth', $container->get(Auth::class));
             return $view;
+        };
+
+        $this->container['cache'] = function ($container) {
+            $filesystemAdapter = new Local(getenv('ROOT').'/../storage/');
+            $filesystem        = new Filesystem($filesystemAdapter);
+            return new FilesystemCachePool($filesystem);
         };
 
     }

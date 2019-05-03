@@ -13,7 +13,7 @@ use \Respect\Validation\Validator as v;
  * Class Category
  * @package App\Models
  */
-class Category
+class Category extends BaseModel
 {
     /**
      * @var int
@@ -95,7 +95,8 @@ class Category
 
     public function __construct(ContainerInterface $container)
     {
-        $this->categoryRepository = $container->get(CategoryRepositoryInterface::class);
+        parent::__construct($container);
+        $this->categoryRepository = $this->container->get(CategoryRepositoryInterface::class);
     }
 
     /**
@@ -132,4 +133,39 @@ class Category
         return $errors;
     }
 
+    /**
+     * String representation of object
+     * @link https://php.net/manual/en/serializable.serialize.php
+     * @return string the string representation of the object or null
+     * @since 5.1.0
+     */
+    public function serialize()
+    {
+        return serialize([
+            $this->id,
+            $this->name,
+            $this->image,
+            $this->description
+        ]);
+    }
+
+    /**
+     * Constructs the object
+     * @link https://php.net/manual/en/serializable.unserialize.php
+     * @param string $serialized <p>
+     * The string representation of the object.
+     * </p>
+     * @return void
+     * @since 5.1.0
+     */
+    public function unserialize($serialized)
+    {
+        list(
+            $this->id,
+            $this->name,
+            $this->image,
+            $this->description
+            )
+            = unserialize($serialized);
+    }
 }
