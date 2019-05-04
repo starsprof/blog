@@ -142,6 +142,7 @@ class ConsoleBootstrap
                 `published`    tinyint      NOT NULL,
                 `category_id`  int(11)      NOT NULL,
                 `author_id`    int(11)      NULL,
+                FULLTEXT (body, description),
                 PRIMARY KEY (`id`),
                 UNIQUE KEY `posts_slug_uindex` (`slug`),
                 KEY `posts_categories_id_fk` (`category_id`),

@@ -12,7 +12,8 @@
                         <p>{{ category.getDescription }}</p>
                     {% elseif tag is defined %}
                         <h2 class="mb-4">Tag: {{ tag.getTitle }}</h2>
-
+                    {% elseif search is defined %}
+                        <h2 class="mb-4">Search: {{ search }}</h2>
                     {% endif %}
                 </div>
             </div>

@@ -292,4 +292,18 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
         $stmt->execute($ids);
         return $stmt->fetchAll();
     }
+
+    /**
+     * Search query in Post body and description
+     * @param string $query
+     * @return Post[]
+     */
+    public function search(string $query): array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM `posts` WHERE MATCH(description, body) AGAINST (:query)');
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Post::class, [$this->container]);
+        $stmt->execute(['query' => $query]);
+        return $stmt->fetchAll();
+
+    }
 }

@@ -122,4 +122,11 @@ interface PostRepositoryInterface
      * @return array
      */
     public function findManyByIds(array $ids = array(), bool $isPublishedOnly = false): array;
+
+    /**
+     * Search query in Post body and description
+     * @param string $query
+     * @return Post[]
+     */
+    public function search(string $query): array;
 }

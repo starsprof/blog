@@ -181,4 +181,20 @@ class PageController extends BaseController
 
     }
 
+    public function search(Request $request, Response $response)
+    {
+        $search = $request->getParsedBody()['search'];
+        \Tracy\Debugger::barDump($search);
+        $posts = $this->postRepository->search($search);
+        return $this->view->render(
+            $response,
+            'pages/view.twig',
+            array_merge($this->getSidebarViewModel(),
+                [
+                    'search' => $search,
+                    'posts' => $posts
+                ])
+        );
+    }
+
 }
