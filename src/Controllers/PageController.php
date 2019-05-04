@@ -197,4 +197,9 @@ class PageController extends BaseController
         );
     }
 
+    public function about(Request $request, Response $response)
+    {
+        return $this->view->render($response, 'pages/about.twig', $this->getSidebarViewModel());
+    }
+
 }
