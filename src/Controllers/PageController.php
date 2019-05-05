@@ -46,14 +46,34 @@ class PageController extends BaseController
      */
     public function home(Request $request, Response $response)
     {
-        $posts = $this->postRepository->findLastPublished(8);
+        $per_page = 8;
+        $page = $request->getAttribute('page');
+        if(empty($page)) {
+            $page = 1;
+        }
+        $count = $this->postRepository->count();
+        $pages = ceil($count/$per_page);
+        if($page>$pages){
+            throw new NotFoundException($request, $response);
+        }
+
+
+        if($this->cache->has("post_$page")){
+            $posts = $this->cache->get("post_$page");
+        } else {
+            $posts = $this->postRepository->findLastPublished($per_page, ($page-1)*$per_page);
+            $this->cache->set("post_$page", $posts);
+        }
+
         $sliderPosts = $this->postRepository->getRandomPublished(3);
         return $this->view->render(
             $response,
             'pages/home.twig',
             array_merge([
                 'posts' => $posts,
-                'slider_posts' => $sliderPosts
+                'slider_posts' => $sliderPosts,
+                'pages' => $pages,
+                'page' => $page,
             ], $this->getSidebarViewModel())
         );
     }
@@ -124,7 +144,6 @@ class PageController extends BaseController
     private function getSidebarViewModel()
     {
 
-        $categories = [];
         if($this->cache->has('categories')) {
             $categories = $this->cache->get('categories');
         }else{
@@ -133,7 +152,6 @@ class PageController extends BaseController
         }
 
 
-        $tags =[];
         if($this->cache->has('tags')){
             $tags = $this->cache->get('tags');
         }else {
@@ -142,7 +160,6 @@ class PageController extends BaseController
         }
         $tags = Tag::getRandomTags($tags, 10);
 
-        $randomPosts = [];
         if($this->cache->has('randomTags')){
             $randomPosts = $this->cache->get('randomTags');
         }else {

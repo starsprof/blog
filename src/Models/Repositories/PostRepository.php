@@ -145,7 +145,7 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
      */
     public function count(): int
     {
-        return $this->pdo->query('SELECT count(*) FROM posts')->fetchColumn();
+        return $this->pdo->query('SELECT count(*) FROM posts WHERE published=1')->fetchColumn();
     }
 
     /**

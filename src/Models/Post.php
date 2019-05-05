@@ -424,6 +424,7 @@ class Post extends BaseModel
             $this->tags_ids,
             $this->tags,
             $this->author_id,
+            $this->slug,
             $this->author
         ]);
     }
@@ -454,6 +455,7 @@ class Post extends BaseModel
             $this->tags_ids,
             $this->tags,
             $this->author_id,
+            $this->slug,
             $this->author
             ) = unserialize($serialized);
     }

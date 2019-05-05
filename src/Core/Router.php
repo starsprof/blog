@@ -22,7 +22,7 @@ class Router
     public static function setRoutes(&$app)
     {
         $container = $app->getContainer();
-        $app->get('/', PageController::class.':home')
+        $app->get('/[{page:[0-9]+}]', PageController::class.':home')
             ->setName('home');
 
         $app->map(['GET', 'POST'], '/signin', AuthController::class.':signIn')
